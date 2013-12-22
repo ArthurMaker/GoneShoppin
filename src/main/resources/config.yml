@@ -1,0 +1,9 @@
+# GoneShoppin v2.0 config
+
+bank:
+  limits:
+    first: 1000
+    second: 5000
+    third: 10000
+
+  default-limit: first

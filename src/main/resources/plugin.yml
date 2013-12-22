@@ -1,0 +1,34 @@
+name: GoneShoppin
+version: '${project.version}'
+main: net.chunk64.chinwe.goneshoppin.GoneShoppin
+commands:
+  withdraw:
+    usage: /withdraw <amount>
+    description: Withdraw from your bank account
+    aliases: [wd]
+  deposit:
+    usage: /deposit <amount>
+    description: Deposit into your bank account
+    aliases: [dp]
+  balance:
+    usage: /balance [player]
+    description: View your, or someone else's bank balance
+    aliases: [bal]
+  steal:
+    usage: /steal <amount> <player>
+    description: Steal from someone's bank account
+    aliases: [stl]
+  value:
+    usage: /value [player]
+    description: Value your, or someone else's inventory
+    aliases: [val]
+  count:
+    usage: /count [player]
+    description: Count the amount of the item in your hand in your, or someone else's inventory
+    aliases: [cnt]
+  id:
+    usage: /id [material]
+    description: Get the ID of the item in your hand
+  price:
+    usage: /price [material] [amount]
+
