@@ -7,6 +7,8 @@ import java.sql.Connection;
 public class MySQLUtils
 {
 
+	// currently unused
+
 	public static MySQL mySQL;
 	public static Connection connection = null;
 

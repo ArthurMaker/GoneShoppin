@@ -11,7 +11,6 @@ import net.chunk64.chinwe.goneshoppin.commands.misc.CommandId;
 import net.chunk64.chinwe.goneshoppin.commands.misc.CommandMisc;
 import net.chunk64.chinwe.goneshoppin.commands.shop.CommandPrice;
 import net.chunk64.chinwe.goneshoppin.util.Config;
-import net.chunk64.chinwe.goneshoppin.util.mysql.MySQLUtils;
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -32,7 +31,7 @@ public class GoneShoppin extends JavaPlugin
 		ConfigurationSerialization.registerClass(Account.class);
 		init();
 		registerCommands();
-		MySQLUtils.init(this);
+//		MySQLUtils.init(this);
 
 	}
 
