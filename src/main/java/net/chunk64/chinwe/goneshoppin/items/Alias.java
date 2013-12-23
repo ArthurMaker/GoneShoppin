@@ -1,5 +1,6 @@
-package net.chunk64.chinwe.goneshoppin;
+package net.chunk64.chinwe.goneshoppin.items;
 
+import net.chunk64.chinwe.goneshoppin.GoneShoppin;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
@@ -12,23 +13,17 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class MaterialAlias
+public class Alias
 {
-	private static List<MaterialAlias> instances = new ArrayList<MaterialAlias>();
+	private static List<Alias> instances = new ArrayList<Alias>();
 	private Material material;
 	private int id;
 	private int damage;
 	private Set<String> aliases;
 
-	public static MaterialAlias getMaterialAlias(int id, int damage)
-	{
-		for (MaterialAlias alias : instances)
-			if (id == alias.getId() && damage == alias.getDamage())
-				return alias;
-		return new MaterialAlias(id, damage);
-	}
 
-	private MaterialAlias(int id, int damage)
+
+	private Alias(int id, int damage)
 	{
 		this.id = id;
 		this.damage = damage;
@@ -63,6 +58,9 @@ public class MaterialAlias
 			aliases.add(alias);
 	}
 
+	/**
+	 * Loads all aliases from items.csv
+	 */
 	public static void loadFromFile()
 	{
 		try
@@ -83,7 +81,7 @@ public class MaterialAlias
 				int id = Integer.parseInt(split[1]);
 				int damage = Integer.parseInt(split[2]);
 
-				MaterialAlias a = getMaterialAlias(id, damage);
+				Alias a = getAlias(id, damage);
 				a.add(alias);
 			}
 
@@ -97,20 +95,25 @@ public class MaterialAlias
 
 	}
 
-	public static MaterialAlias getAlias(Material material, int damage)
+	public static Alias getAlias(int id, int damage)
 	{
-		for (MaterialAlias alias : instances)
-			if (alias.getMaterial() == material && alias.getDamage() == damage)
+		for (Alias alias : instances)
+			if (id == alias.getId() && damage == alias.getDamage())
 				return alias;
-		return null;
+		return new Alias(id, damage);
 	}
 
-	public static MaterialAlias getAlias(Material material)
+	public static Alias getAlias(Material material, int damage)
+	{
+		return getAlias(material.getId(), damage);
+	}
+
+	public static Alias getAlias(Material material)
 	{
 		return getAlias(material, 0);
 	}
 
-	public static MaterialAlias getAlias(int id)
+	public static Alias getAlias(int id)
 	{
 		Material m = Material.getMaterial(id);
 		if (m == null)
@@ -118,9 +121,9 @@ public class MaterialAlias
 		return getAlias(m, 0);
 	}
 
-	public static MaterialAlias getAlias(String material)
+	public static Alias getAlias(String material)
 	{
-		for (MaterialAlias alias : instances)
+		for (Alias alias : instances)
 			if (alias.aliases.contains(material))
 				return alias;
 
@@ -128,14 +131,15 @@ public class MaterialAlias
 
 	}
 
-	public static void unload()
+	/** Is invoked implicitly */
+	protected static void unload()
 	{
-		for (MaterialAlias materialAlias : instances)
-			materialAlias.aliases = null;
+		for (Alias alias : instances)
+			alias.aliases = null;
 		instances = null;
 	}
 
-	public static MaterialAlias getAlias(ItemStack itemStack)
+	public static Alias getAlias(ItemStack itemStack)
 	{
 		return getAlias(itemStack.getType(), itemStack.getData().getData());
 	}

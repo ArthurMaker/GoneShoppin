@@ -8,7 +8,7 @@ import java.util.List;
 
 public class Utils
 {
-	public static final String PREFIX = "§8[§6|§8] §r";
+	public static final String PREFIX = "§8[§5|§8] §r";
 
 	/**
 	 * Messages a command sender with the given message with translated chat colours
@@ -59,6 +59,12 @@ public class Utils
 	public static String friendlyName(Material material)
 	{
 		return material.toString().toLowerCase().replace("_", " ");
+	}
+
+	/** Strips a string of all & colour codes */
+	public static String stripColour(String s)
+	{
+		return ChatColor.stripColor(ChatColor.translateAlternateColorCodes('&', s));
 	}
 
 

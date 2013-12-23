@@ -12,24 +12,20 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-public class CommandPrice extends ShoppingCommand
+public class CommandBuy extends ShoppingCommand
 {
 
-	public CommandPrice(Permission perm, boolean playerOnly, String command)
+	public CommandBuy(Permission perm, boolean playerOnly, String command)
 	{
 		super(perm, playerOnly, command);
 	}
 
-	// /price material amount
-	// /sell  material amount
-
+	// /buy material amount
 
 	@Override
 	public void run(CommandSender sender, Command cmd, String[] args) throws Exception
 	{
 		Player player = (Player) sender;
-		String commandName = cmd.getName().toLowerCase();
-		boolean price = commandName.equals("price");
 
 		// usage
 		if (args.length > 2)
@@ -51,9 +47,9 @@ public class CommandPrice extends ShoppingCommand
 
 		// validate
 		if (itemStack.getType() == Material.AIR)
-			throw new IllegalArgumentException("You cannot " + commandName + " air!");
+			throw new IllegalArgumentException("You cannot price air!");
 		if (ShoppingUtils.isGold(itemStack))
-			throw new IllegalArgumentException("You cannot " + commandName + " gold, ye dongle!");
+			throw new IllegalArgumentException("You cannot price gold, ye dongle!");
 
 		// get price
 		String name = ShoppingUtils.toString(itemStack, true);
@@ -62,32 +58,14 @@ public class CommandPrice extends ShoppingCommand
 		if (gsItem == null)
 			throw new IllegalArgumentException(name + " could not be priced!");
 
-		Integer buyPrice = gsItem.getPrice(true, itemStack.getAmount());
-		Integer sellPrice = gsItem.getPrice(true, itemStack.getAmount());
-
-		// price it
-		if (price)
-		{
-			name = "&6" + itemStack.getAmount() + "&fx " + name;
-			String[] notes = {gsItem.getNote(true), gsItem.getNote(false)};
-
-			Utils.message(sender, (args.length == 0 ? "That " : "") + name + " costs:");
-			Utils.message(sender, "To buy: &b" + gsItem.getFormattedPrice(true, itemStack.getAmount()) + (!notes[0].isEmpty() ? "\n    &f- &3" + notes[0] : ""));
-			Utils.message(sender, "To sell: &b" + gsItem.getFormattedPrice(false, itemStack.getAmount()) + (!notes[1].isEmpty() ? "\n    &f- &3" + notes[1] : ""));
-			sender.sendMessage("§8----------------");
-			return;
-		}
-
-		// check if sellprice is null - cant sell
-
-		// check if tool - needs reparing
-
-		// check inventory has it
-
-		// remove all metadata from it
-
-		// remove from inv
+		// send price
+		name = "&6" + itemStack.getAmount() + "&fx " + name;
+		String[] notes = {gsItem.getNote(true), gsItem.getNote(false)};
 
 
+		Utils.message(sender, (args.length == 0 ? "That " : "") + name + " costs:");
+		Utils.message(sender, "To buy: &b" + gsItem.getFormattedPrice(true, itemStack.getAmount()) + (!notes[0].isEmpty() ? "\n    &f- &3" + notes[0] : ""));
+		Utils.message(sender, "To sell: &b" + gsItem.getFormattedPrice(false,itemStack.getAmount()) + (!notes[1].isEmpty() ? "\n    &f- &3" + notes[1] : ""));
+		sender.sendMessage("§8----------------");
 	}
 }

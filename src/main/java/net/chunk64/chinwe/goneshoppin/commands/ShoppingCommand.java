@@ -46,16 +46,16 @@ public abstract class ShoppingCommand implements CommandExecutor
 
 		} catch (NumberFormatException e)
 		{
-			Utils.message(sender, "&c" + (e.getMessage() == null ? "A number was expected!" : e.getMessage()));
+			Utils.message(sender, "&c" + (e.getMessage() == null ? "A number was expected!" : Utils.stripColour(e.getMessage())));
 		} catch (IllegalArgumentException e)
 		{
-			Utils.message(sender, "&c" + e.getMessage());
+			Utils.message(sender, "&c" + Utils.stripColour(e.getMessage()));
 		} catch (IncorrectUsageException e)
 		{
-			Utils.message(sender, "&cUsage: /" + cmd.getName() + (e.getMessage() != null ? " " + e.getMessage() : ""));
+			Utils.message(sender, "&cUsage: /" + cmd.getName() + (e.getMessage() != null ? " " + Utils.stripColour(e.getMessage()) : ""));
 		} catch (Exception e)
 		{
-			Utils.message(sender, "&cError: " + (e.getMessage() == null ? e : e.getMessage()));
+			Utils.message(sender, "&cError: " + (e.getMessage() == null ? e : Utils.stripColour(e.getMessage())));
 			e.printStackTrace();
 		}
 		return true;

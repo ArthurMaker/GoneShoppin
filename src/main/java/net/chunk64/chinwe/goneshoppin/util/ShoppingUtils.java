@@ -1,7 +1,7 @@
 package net.chunk64.chinwe.goneshoppin.util;
 
 import net.chunk64.chinwe.goneshoppin.Gold;
-import net.chunk64.chinwe.goneshoppin.MaterialAlias;
+import net.chunk64.chinwe.goneshoppin.items.Alias;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
@@ -206,16 +206,16 @@ public class ShoppingUtils
 		String stringId = gaveDamage ? split[0] : input;
 		Integer numberId = Utils.getInt(stringId);
 
-		MaterialAlias alias = MaterialAlias.getAlias(stringId);
-		System.out.println("got alias");
+		Alias alias = Alias.getAlias(stringId);
+//		System.out.println("got alias");
 
 		// material name
 		material = numberId == null ? alias == null ? Material.getMaterial(stringId) : alias.getMaterial() : Material.getMaterial(numberId);
-		System.out.println("material = " + material);
+//		System.out.println("material = " + material);
 
 		// damage
 		damage = alias == null ? 0 : alias.getDamage();
-		System.out.println("aliasDamage = " + damage);
+//		System.out.println("aliasDamage = " + damage);
 
 		if (gaveDamage)
 		{
@@ -224,7 +224,7 @@ public class ShoppingUtils
 				return null;
 			damage = parsed;
 		}
-		System.out.println("damage = " + damage);
+//		System.out.println("damage = " + damage);
 
 		// invalid
 		if (material == null)

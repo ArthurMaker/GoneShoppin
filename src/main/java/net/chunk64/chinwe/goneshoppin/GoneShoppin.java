@@ -10,6 +10,8 @@ import net.chunk64.chinwe.goneshoppin.commands.bank.CommandBanking;
 import net.chunk64.chinwe.goneshoppin.commands.misc.CommandId;
 import net.chunk64.chinwe.goneshoppin.commands.misc.CommandMisc;
 import net.chunk64.chinwe.goneshoppin.commands.shop.CommandPrice;
+import net.chunk64.chinwe.goneshoppin.items.Alias;
+import net.chunk64.chinwe.goneshoppin.items.GSItem;
 import net.chunk64.chinwe.goneshoppin.util.Config;
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -39,10 +41,9 @@ public class GoneShoppin extends JavaPlugin
 	public void onDisable()
 	{
 		Bank.saveAllAccounts();
-
+		GSItem.unload();
 		instance = null;
 		config = null;
-		MaterialAlias.unload();
 	}
 
 	private void init()
@@ -52,8 +53,9 @@ public class GoneShoppin extends JavaPlugin
 
 		new Bank(this);
 		Bank.loadAllAccounts();
+		Alias.loadFromFile();
+		GSItem.loadFile(this);
 
-		MaterialAlias.loadFromFile();
 	}
 
 	private void registerCommands()
