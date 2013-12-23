@@ -13,7 +13,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.HashMap;
-import java.util.List;
 
 public class CommandBanking extends ShoppingCommand
 {
@@ -96,8 +95,7 @@ public class CommandBanking extends ShoppingCommand
 				throw new IllegalArgumentException(String.format("%s bank is %dGN short of %dGN!", ct == CommandType.STEAL ? "That" : "Your", (amount - balance), amount));
 
 			// give as much as possible
-			List<ItemStack> gold = ShoppingUtils.simplify(amount);
-			HashMap<Integer, ItemStack> overflowGold = player.getInventory().addItem(gold.toArray(new ItemStack[gold.size()]));
+			HashMap<Integer, ItemStack> overflowGold = ShoppingUtils.addGoldToInventory(player, amount);
 
 			if (!overflowGold.isEmpty())
 			{

@@ -28,11 +28,11 @@ public class CommandBuy extends ShoppingCommand
 		Player player = (Player) sender;
 
 		// usage
-		if (args.length > 2)
-			throw new IncorrectUsageException("[material] [amount]");
+		if (args.length != 2 && args.length != 1)
+			throw new IncorrectUsageException("<material> [amount]");
 
 		// get itemstack
-		ItemStack itemStack = args.length == 0 ? player.getItemInHand() : ShoppingUtils.parseInput(args[0], sender);
+		ItemStack itemStack = ShoppingUtils.parseInput(args[0], sender);
 		if (itemStack == null)
 			return;
 
@@ -47,25 +47,30 @@ public class CommandBuy extends ShoppingCommand
 
 		// validate
 		if (itemStack.getType() == Material.AIR)
-			throw new IllegalArgumentException("You cannot price air!");
+			throw new IllegalArgumentException("You cannot buy air!");
 		if (ShoppingUtils.isGold(itemStack))
-			throw new IllegalArgumentException("You cannot price gold, ye dongle!");
+			throw new IllegalArgumentException("You cannot buy gold, ye dongle!");
 
 		// get price
 		String name = ShoppingUtils.toString(itemStack, true);
 		GSItem gsItem = GSItem.loadItem(itemStack.getType(), itemStack.getData().getData());
+		Integer buyPrice = gsItem.getPrice(true, itemStack.getAmount());
 
 		if (gsItem == null)
 			throw new IllegalArgumentException(name + " could not be priced!");
 
-		// send price
-		name = "&6" + itemStack.getAmount() + "&fx " + name;
-		String[] notes = {gsItem.getNote(true), gsItem.getNote(false)};
+		// check money in inv
+		int invValue = ShoppingUtils.valueInventory(player);
+		if (invValue < buyPrice)
+			throw new IllegalArgumentException("You need an extra " + (buyPrice - invValue) + "GN to buy that many!");
 
+		// take money
+		ShoppingUtils.takeGold(player, buyPrice);
 
-		Utils.message(sender, (args.length == 0 ? "That " : "") + name + " costs:");
-		Utils.message(sender, "To buy: &b" + gsItem.getFormattedPrice(true, itemStack.getAmount()) + (!notes[0].isEmpty() ? "\n    &f- &3" + notes[0] : ""));
-		Utils.message(sender, "To sell: &b" + gsItem.getFormattedPrice(false,itemStack.getAmount()) + (!notes[1].isEmpty() ? "\n    &f- &3" + notes[1] : ""));
-		sender.sendMessage("§8----------------");
+		// give
+		ShoppingUtils.giveItems(player, itemStack);
+
+		Utils.message(sender, String.format("You bought &6%d&fx %s &ffor &6%dGN&f!", itemStack.getAmount(), name, buyPrice));
+
 	}
 }

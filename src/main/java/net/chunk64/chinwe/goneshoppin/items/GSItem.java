@@ -6,6 +6,7 @@ import org.apache.commons.lang.builder.EqualsBuilder;
 import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.inventory.ItemStack;
 
 import java.io.File;
 import java.util.HashSet;
@@ -30,7 +31,7 @@ public class GSItem
 	{
 		this.alias = alias;
 		this.material = material;
-		this.damage = damage;
+		this.damage = material.getMaxDurability() > 0 ? 0 : damage;
 		this.buyingPrice = buyingPrice;
 		this.sellingPrice = sellingPrice;
 		this.perBuy = perBuy;
@@ -67,7 +68,7 @@ public class GSItem
 		}
 
 
-		String prefix = "blocks." + material;
+		String prefix = "blocks." + material.toString().replace(" ", "_").toUpperCase();
 
 		// loop through subs
 		for (String damage : yml.getConfigurationSection(prefix + ".subs").getKeys(false))
@@ -75,8 +76,8 @@ public class GSItem
 			int data = Utils.getInt(damage);
 			String subPrefix = prefix + ".subs." + damage;
 
-			String name = yml.getString(subPrefix + ".name");
-			String altName = yml.getString(subPrefix + ".alt-name");
+//			String name = yml.getString(subPrefix + ".name");
+//			String altName = yml.getString(subPrefix + ".alt-name");
 
 			Integer buy = yml.getInt(subPrefix + ".buy.price"), sell = yml.getInt(subPrefix + ".sell.price");
 			String buyNote = yml.getString(subPrefix + ".buy.note"), sellNote = yml.getString(subPrefix + ".sell.note");
@@ -92,6 +93,10 @@ public class GSItem
 
 	private static GSItem getItem(Material material, int damage)
 	{
+		// tool
+		if (material.getMaxDurability() > 0)
+			damage = 0;
+
 		for (GSItem gsItem : instances)
 			if (gsItem.material == material && gsItem.damage == damage)
 				return gsItem;
@@ -106,6 +111,11 @@ public class GSItem
 			return item;
 		load(material, false);
 		return getItem(material, damage);
+	}
+
+	public static GSItem loadItem(ItemStack itemStack)
+	{
+		return loadItem(itemStack.getType(), itemStack.getData().getData());
 	}
 
 	public static void unload()

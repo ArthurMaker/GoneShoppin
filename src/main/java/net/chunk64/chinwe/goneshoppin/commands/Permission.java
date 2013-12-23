@@ -13,7 +13,8 @@ public enum Permission
 
 	VALUE("value your inventory", true), VALUE_OTHER("value others' inventories", false),
 	COUNT("count in your inventory", true), COUNT_OTHER("count in others' inventories", false),
-	PRICE("price items", true), ID(null, true);
+	PRICE("price items", true), ID(null, true),
+	SELL("sell items", true), BUY("buy items", true);
 
 	private static final String PLUGIN_NAME = "goneshoppin";
 	private String message;

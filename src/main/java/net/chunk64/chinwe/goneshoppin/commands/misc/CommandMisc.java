@@ -48,15 +48,17 @@ public class CommandMisc extends ShoppingCommand
 		String who = self ? "Your" : target.getName() + "'s";
 
 		// value
-		// TODO value selling prices
 		if (value)
 		{
 			int goldValue = ShoppingUtils.valueInventory(target);
+			int sellValue = ShoppingUtils.priceInventory(target.getInventory());
 
 			if (goldValue == 0)
-				Utils.message(sender, who + " &binventory&f is &6worthless&f!");
+				Utils.message(sender, who + " &binventory&f doesn't hold &6any GN&f!");
 			else
 				Utils.message(sender, who + " &binventory&f holds &6" + goldValue + "GN&f!");
+			if (sellValue != 0)
+				Utils.message(sender, who + " &binventory&f can sell for &6" + sellValue + "GN&f!");
 			return;
 		}
 
@@ -64,7 +66,7 @@ public class CommandMisc extends ShoppingCommand
 		ItemStack itemStack = player.getItemInHand();
 		if (itemStack == null || itemStack.getType() == Material.AIR)
 			throw new IllegalArgumentException("You can't count air!");
-		int count = ShoppingUtils.countInInventory(player, itemStack.getData());
+		int count = ShoppingUtils.countInInventory(player, itemStack);
 
 		String name = ShoppingUtils.toString(itemStack, true);
 

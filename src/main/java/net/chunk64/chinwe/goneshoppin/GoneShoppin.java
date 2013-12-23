@@ -9,6 +9,7 @@ import net.chunk64.chinwe.goneshoppin.commands.bank.CommandBalance;
 import net.chunk64.chinwe.goneshoppin.commands.bank.CommandBanking;
 import net.chunk64.chinwe.goneshoppin.commands.misc.CommandId;
 import net.chunk64.chinwe.goneshoppin.commands.misc.CommandMisc;
+import net.chunk64.chinwe.goneshoppin.commands.shop.CommandBuy;
 import net.chunk64.chinwe.goneshoppin.commands.shop.CommandPrice;
 import net.chunk64.chinwe.goneshoppin.items.Alias;
 import net.chunk64.chinwe.goneshoppin.items.GSItem;
@@ -33,10 +34,10 @@ public class GoneShoppin extends JavaPlugin
 		ConfigurationSerialization.registerClass(Account.class);
 		init();
 		registerCommands();
+		registerListeners();
 //		MySQLUtils.init(this);
 
 	}
-
 	@Override
 	public void onDisable()
 	{
@@ -67,6 +68,8 @@ public class GoneShoppin extends JavaPlugin
 		register("value", CommandMisc.class, true, Permission.VALUE);
 		register("count", CommandMisc.class, true, Permission.COUNT);
 		register("price", CommandPrice.class, true, Permission.PRICE);
+		register("sell", CommandPrice.class, true, Permission.SELL);
+		register("buy", CommandBuy.class, true, Permission.BUY);
 		register("id", CommandId.class, true, Permission.ID);
 	}
 
@@ -81,6 +84,11 @@ public class GoneShoppin extends JavaPlugin
 		{
 			getLogger().severe("Could not register command '" + command + "': " + e);
 		}
+	}
+
+	private void registerListeners()
+	{
+		getServer().getPluginManager().registerEvents(new ShoppinListener(), this);
 	}
 
 	public static GoneShoppin getInstance()

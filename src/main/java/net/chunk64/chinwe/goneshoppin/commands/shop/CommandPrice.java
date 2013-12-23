@@ -21,8 +21,7 @@ public class CommandPrice extends ShoppingCommand
 	}
 
 	// /price material amount
-	// /sell  material amount
-
+	// /sell amount
 
 	@Override
 	public void run(CommandSender sender, Command cmd, String[] args) throws Exception
@@ -32,18 +31,23 @@ public class CommandPrice extends ShoppingCommand
 		boolean price = commandName.equals("price");
 
 		// usage
-		if (args.length > 2)
+		if (price && args.length > 2)
 			throw new IncorrectUsageException("[material] [amount]");
+		if (!price && args.length > 1)
+			throw new IncorrectUsageException("[amount]");
 
 		// get itemstack
-		ItemStack itemStack = args.length == 0 ? player.getItemInHand() : ShoppingUtils.parseInput(args[0], sender);
+		ItemStack itemStack = (!price ? player.getItemInHand() : args.length == 0 ? player.getItemInHand() : ShoppingUtils.parseInput(args[0], sender));
+
 		if (itemStack == null)
 			return;
 
+		itemStack = itemStack.clone(); // to be safe
+
 		// get amount
-		if (args.length == 2)
+		if ((price && args.length == 2) || !price && args.length == 1)
 		{
-			Integer amount = Utils.getInt(args[1]);
+			Integer amount = Utils.getInt(args[price ? 1 : 0]);
 			if (amount == null)
 				throw new IllegalArgumentException("Invalid amount given!");
 			itemStack.setAmount(amount);
@@ -62,9 +66,6 @@ public class CommandPrice extends ShoppingCommand
 		if (gsItem == null)
 			throw new IllegalArgumentException(name + " could not be priced!");
 
-		Integer buyPrice = gsItem.getPrice(true, itemStack.getAmount());
-		Integer sellPrice = gsItem.getPrice(true, itemStack.getAmount());
-
 		// price it
 		if (price)
 		{
@@ -78,16 +79,29 @@ public class CommandPrice extends ShoppingCommand
 			return;
 		}
 
-		// check if sellprice is null - cant sell
+		Integer sellPrice = gsItem.getPrice(false, itemStack.getAmount());
 
-		// check if tool - needs reparing
+		// validation
+		if (sellPrice == null)
+			throw new IllegalArgumentException("You cannot sell that!");
+
+		// damaged tool
+		if (Utils.isDamagedTool(itemStack))
+			throw new IllegalArgumentException("You must repair that " + name + " before selling it!");
 
 		// check inventory has it
-
-		// remove all metadata from it
+		int invAmount = ShoppingUtils.countInInventory(player, itemStack);
+		if (invAmount < itemStack.getAmount())
+			throw new IllegalArgumentException("You only have " + invAmount + " in your inventory!");
 
 		// remove from inv
+		ShoppingUtils.removeFromInventory(player, itemStack, itemStack.getAmount());
 
+		// give money
+		if (ShoppingUtils.giveGold(player, sellPrice))
+			Utils.message(sender, "&7Dropping excess money onto the floor!");
+
+		Utils.message(sender, String.format("You sold &6%d&fx %s &ffor &6%dGN&f!", itemStack.getAmount(), name, sellPrice));
 
 	}
 }

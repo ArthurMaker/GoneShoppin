@@ -1,13 +1,18 @@
 package net.chunk64.chinwe.goneshoppin.util;
 
 import net.chunk64.chinwe.goneshoppin.Gold;
+import net.chunk64.chinwe.goneshoppin.GoneShoppin;
 import net.chunk64.chinwe.goneshoppin.items.Alias;
+import net.chunk64.chinwe.goneshoppin.items.GSItem;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.MaterialData;
+import org.bukkit.metadata.FixedMetadataValue;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -35,17 +40,82 @@ public class ShoppingUtils
 		return count;
 	}
 
+
+	/**
+	 * Gets the selling price of an entire inventory
+	 */
+	public static int priceInventory(Inventory inventory)
+	{
+		int value = 0;
+		for (ItemStack itemStack : inventory.getContents())
+			value += priceItemstack(itemStack);
+		return value;
+	}
+
+	/**
+	 * Gets the selling price of an itemstack
+	 */
+	public static int priceItemstack(ItemStack itemStack)
+	{
+		if (itemStack == null)
+			return 0;
+		if (isGold(itemStack))
+			return 0;
+		GSItem gsItem = GSItem.loadItem(itemStack);
+		return gsItem.getPrice(false, itemStack.getAmount());
+	}
+
 	/**
 	 * Counts the amount of this material and data in the player's inventory
 	 */
-	public static int countInInventory(Player player, MaterialData data)
+	public static int countInInventory(Player player, ItemStack itemStack)
 	{
 		int count = 0;
-		for (ItemStack itemStack : player.getInventory().getContents())
-			if (itemStack != null && itemStack.getData().equals(data))
-				count += itemStack.getAmount();
-
+		for (ItemStack is : player.getInventory().getContents())
+			if (is != null && is.getType() == itemStack.getType())
+				if (Utils.isTool(itemStack) || is.getData().getData() == itemStack.getData().getData())
+					count += is.getAmount();
 		return count;
+	}
+
+	/**
+	 * Removes the given amount of the material and data from the player's inventory, ASSUMING THEY HAVE ENOUGH
+	 */
+
+	public static void removeFromInventory(Player player, ItemStack itemStack, int amount)
+	{
+		ItemStack[] contents = player.getInventory().getContents();
+		for (int i = 0; i < contents.length; i++)
+		{
+			ItemStack is = contents[i];
+			if (is == null)
+				continue;
+
+			if (is.getType() == itemStack.getType() && (Utils.isTool(itemStack) || is.getData().getData() == itemStack.getData().getData()))
+			{
+				final int stackCount = is.getAmount();
+
+				// remove whole stack
+				if (stackCount <= amount)
+				{
+					player.getInventory().setItem(i, null);
+					amount -= stackCount;
+				}
+
+				// take part
+				else
+				{
+					is.setAmount(stackCount - amount);
+					amount = 0;
+				}
+
+
+			}
+
+			// done
+			if (amount == 0)
+				return;
+		}
 	}
 
 	/**
@@ -70,6 +140,49 @@ public class ShoppingUtils
 
 
 	/**
+	 * Gives the specified amount of gold to the player. Any overflow will be dropped on the floor, where only they can pick it up
+	 *
+	 * @return True if overflow was dropped, otherwise false
+	 */
+	public static boolean giveGold(Player player, Integer amount)
+	{
+		return giveItems(player, Utils.listToArray(simplify(amount)));
+	}
+
+	/**
+	 * Gives the specified items to the player. Any overflow will be dropped on the floor, where only they can pick it up
+	 *
+	 * @return True if overflow was dropped, otherwise false
+	 */
+	public static boolean giveItems(Player player, ItemStack... itemStacks)
+	{
+		// give as much as possible
+		HashMap<Integer, ItemStack> overflow = player.getInventory().addItem(itemStacks);
+
+		if (overflow.isEmpty())
+			return false;
+
+		// drop the rest
+		for (ItemStack itemStack : overflow.values())
+		{
+			Item drop = player.getWorld().dropItemNaturally(player.getLocation(), itemStack);
+			drop.setMetadata("GoneShoppin:DropProtection", new FixedMetadataValue(GoneShoppin.getInstance(), player.getName()));
+		}
+		return true;
+	}
+
+
+	/**
+	 * Shortcut for inventory.add(simplify(goldAmount)), returns inventory.add() HashMap
+	 */
+	public static HashMap<Integer, ItemStack> addGoldToInventory(Player player, Integer amount)
+	{
+		List<ItemStack> gold = ShoppingUtils.simplify(amount);
+		//		return player.getInventory().addItem(gold.toArray(new ItemStack[gold.size()]));
+		return player.getInventory().addItem(Utils.listToArray(gold));
+	}
+
+	/**
 	 * Removes the specified amount of gold from the player's inventory, assuming they have enough
 	 */
 	public static void takeGold(Player player, Integer amount)
@@ -90,8 +203,6 @@ public class ShoppingUtils
 			// take part of a stack
 			else
 			{
-
-
 				// take more than needed
 				while (amount > 0)
 				{
@@ -176,8 +287,8 @@ public class ShoppingUtils
 	{
 		MaterialData data = itemStack.getData();
 		StringBuilder sb = new StringBuilder("&b" + (name ? Utils.friendlyName(data.getItemType()) : data.getItemTypeId()));
-		if (data.getData() != 0)
-			sb.append("&f:&6" + data.getData());
+		if (data.getData() != 0 && !Utils.isDamagedTool(itemStack))
+			sb.append("&f:&6").append(data.getData());
 
 		return sb.toString() + ChatColor.RESET;
 	}
@@ -207,15 +318,15 @@ public class ShoppingUtils
 		Integer numberId = Utils.getInt(stringId);
 
 		Alias alias = Alias.getAlias(stringId);
-//		System.out.println("got alias");
+		//		System.out.println("got alias");
 
 		// material name
 		material = numberId == null ? alias == null ? Material.getMaterial(stringId) : alias.getMaterial() : Material.getMaterial(numberId);
-//		System.out.println("material = " + material);
+		//		System.out.println("material = " + material);
 
 		// damage
 		damage = alias == null ? 0 : alias.getDamage();
-//		System.out.println("aliasDamage = " + damage);
+		//		System.out.println("aliasDamage = " + damage);
 
 		if (gaveDamage)
 		{
@@ -224,7 +335,7 @@ public class ShoppingUtils
 				return null;
 			damage = parsed;
 		}
-//		System.out.println("damage = " + damage);
+		//		System.out.println("damage = " + damage);
 
 		// invalid
 		if (material == null)
