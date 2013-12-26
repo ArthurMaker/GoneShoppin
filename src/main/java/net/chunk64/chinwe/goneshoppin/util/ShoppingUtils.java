@@ -61,7 +61,8 @@ public class ShoppingUtils
 		if (isGold(itemStack))
 			return 0;
 		GSItem gsItem = GSItem.loadItem(itemStack);
-		return gsItem.getRawPrice(false, itemStack.getAmount());
+		Double price = gsItem.getRawPrice(false, itemStack.getAmount());
+		return price == null ? 0 : price;
 	}
 
 	/**
@@ -108,8 +109,6 @@ public class ShoppingUtils
 					is.setAmount(stackCount - amount);
 					amount = 0;
 				}
-
-
 			}
 
 			// done

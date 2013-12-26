@@ -55,7 +55,7 @@ public abstract class ShoppingCommand implements CommandExecutor
 		} catch (IncorrectUsageException e)
 		{
 			Utils.message(sender, "&cUsage: " + cmd.getUsage());
-//			Utils.message(sender, "&cUsage: /" + cmd.getUsage() + (e.getMessage() != null ? " " + Utils.stripColour(e.getMessage()) : ""));
+			//			Utils.message(sender, "&cUsage: /" + cmd.getUsage() + (e.getMessage() != null ? " " + Utils.stripColour(e.getMessage()) : ""));
 		} catch (Exception e)
 		{
 			Utils.message(sender, "&cError: " + (e.getMessage() == null ? e : Utils.stripColour(e.getMessage())));

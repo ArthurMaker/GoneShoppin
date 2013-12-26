@@ -43,7 +43,7 @@ public class CommandChange extends ShoppingCommand
 			ShoppingUtils.giveItems(player, new ItemStack(Material.GOLD_NUGGET, value)); // give it back in only nuggets
 
 
-		Utils.message(sender, "You " + (simplify ? "simplified" : "cashed") +" &6" + value + "GN &fto&b " + (!simplify ? "" : "gold blocks&f, &bingots&f and&b ") + "nuggets&f!");
+		Utils.message(sender, "You " + (simplify ? "simplified" : "cashed") + " &6" + value + "GN &fto&b " + (!simplify ? "" : "gold blocks&f, &bingots&f and&b ") + "nuggets&f!");
 
 	}
 }

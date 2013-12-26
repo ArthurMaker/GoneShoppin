@@ -17,7 +17,6 @@ import net.chunk64.chinwe.goneshoppin.items.Alias;
 import net.chunk64.chinwe.goneshoppin.items.GSItem;
 import net.chunk64.chinwe.goneshoppin.util.Config;
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
-import org.bukkit.permissions.PermissionRemovedExecutor;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.lang.reflect.Constructor;
@@ -38,9 +37,10 @@ public class GoneShoppin extends JavaPlugin
 		init();
 		registerCommands();
 		registerListeners();
-//		MySQLUtils.init(this);
+		//		MySQLUtils.init(this);
 
 	}
+
 	@Override
 	public void onDisable()
 	{

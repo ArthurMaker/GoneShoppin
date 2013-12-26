@@ -67,7 +67,7 @@ public class Bank
 		accounts.put(account.getName(), account);
 	}
 
-	public void removeAccount (Account account)
+	public void removeAccount(Account account)
 	{
 		accounts.remove(account.getName());
 	}
@@ -89,7 +89,9 @@ public class Bank
 		return account;
 	}
 
-	/** Returns the account for a player based on the given name: if not found, returns the account for the literal name. If still not found, returns null */
+	/**
+	 * Returns the account for a player based on the given name: if not found, returns the account for the literal name. If still not found, returns null
+	 */
 	public Account getAccountFuzzily(String player)
 	{
 		Player targetPlayer = Bukkit.getPlayer(player);

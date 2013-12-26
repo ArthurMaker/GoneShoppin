@@ -52,7 +52,7 @@ public class CommandAdmin extends ShoppingCommand
 		{
 			BankLimit limit = BankLimit.match(args[1]);
 			if (limit == null)
-				throw new IllegalArgumentException("Invalid limit! Options: " + Utils.formatList(Arrays.asList(BankLimit.values()), false));
+				throw new IllegalArgumentException("Invalid limit!\n    Options: " + Utils.formatList(Arrays.asList(BankLimit.values()), false));
 			account.setLimit(limit);
 			value = limit.toAmount();
 		}

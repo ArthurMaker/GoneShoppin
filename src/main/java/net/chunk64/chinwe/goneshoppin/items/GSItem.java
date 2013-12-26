@@ -107,6 +107,9 @@ public class GSItem
 		return null;
 	}
 
+	/**
+	 * Retrieve a GSItem based on material and damage
+	 */
 	public static GSItem loadItem(Material material, int damage)
 	{
 		GSItem item = getItem(material, damage);

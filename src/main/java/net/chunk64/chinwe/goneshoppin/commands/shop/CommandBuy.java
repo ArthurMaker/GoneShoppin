@@ -74,7 +74,6 @@ public class CommandBuy extends ShoppingCommand
 
 		// check amount
 		checkMultiples(gsItem, itemStack, true);
-		System.out.println("itemStack.getAmount() = " + itemStack.getAmount());
 
 		// update price
 		buyPrice *= itemStack.getAmount();

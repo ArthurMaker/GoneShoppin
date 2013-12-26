@@ -22,7 +22,6 @@ public class Alias
 	private Set<String> aliases;
 
 
-
 	private Alias(int id, int damage)
 	{
 		this.id = id;
@@ -131,7 +130,9 @@ public class Alias
 
 	}
 
-	/** Is invoked implicitly */
+	/**
+	 * Is invoked implicitly
+	 */
 	protected static void unload()
 	{
 		for (Alias alias : instances)
