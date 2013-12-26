@@ -31,4 +31,28 @@ commands:
     description: Get the ID of the item in your hand
   price:
     usage: /price [material] [amount]
+    description: Price the item in your hand, or the given material
+  sell:
+    usage: /sell [amount]
+    description: Sell the item in your hand, with a default amount of 1
+  buy:
+    usage: /buy <material> [amount]
+    description: Buy some of the given item, with a default amount of 1
+  setbalance:
+    usage: /setbalance <player> <new balance>
+    description: Set a player's bank balance
+    aliases: [setbal]
+  setlimit:
+    usage: /setlimit <player> <new limit>
+    description: Set a player's bank limit
+    aliases: [setlim]
+  cash:
+    usage: /cash
+    description: Cash all the gold in your inventory into purely nuggets
+    aliases: [cashgold]
+  simplify:
+    usage: /simplify
+    description: Simplify all the gold in your inventory to gold blocks, ingots and nuggets
+    aliases: [simplifygold]
+
 
