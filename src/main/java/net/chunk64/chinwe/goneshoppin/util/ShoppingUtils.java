@@ -321,13 +321,7 @@ public class ShoppingUtils
 
 		// material name
 		if (numberId == null)
-			if (alias == null)
-				if (stringId.equalsIgnoreCase("hand"))
-					material = player.getItemInHand().getType();
-				else
-					material = Material.getMaterial(stringId);
-			else
-				material = alias.getMaterial();
+			material = alias == null ? stringId.equalsIgnoreCase("hand") ? player.getItemInHand().getType() : Material.getMaterial(stringId) : alias.getMaterial();
 		else
 			material = Material.getMaterial(numberId);
 
