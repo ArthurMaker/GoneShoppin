@@ -6,7 +6,6 @@ import net.chunk64.chinwe.goneshoppin.items.Alias;
 import net.chunk64.chinwe.goneshoppin.items.GSItem;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
@@ -55,14 +54,14 @@ public class ShoppingUtils
 	/**
 	 * Gets the selling price of an itemstack
 	 */
-	public static int priceItemstack(ItemStack itemStack)
+	public static double priceItemstack(ItemStack itemStack)
 	{
 		if (itemStack == null)
 			return 0;
 		if (isGold(itemStack))
 			return 0;
 		GSItem gsItem = GSItem.loadItem(itemStack);
-		return gsItem.getPrice(false, itemStack.getAmount());
+		return gsItem.getRawPrice(false, itemStack.getAmount());
 	}
 
 	/**
@@ -77,6 +76,7 @@ public class ShoppingUtils
 					count += is.getAmount();
 		return count;
 	}
+
 
 	/**
 	 * Removes the given amount of the material and data from the player's inventory, ASSUMING THEY HAVE ENOUGH
@@ -301,7 +301,7 @@ public class ShoppingUtils
 	 * 95
 	 * 95:3
 	 */
-	public static ItemStack parseInput(String input)
+	public static ItemStack parseInput(Player player, String input)
 	{
 		String[] split = input.split(":");
 
@@ -311,22 +311,28 @@ public class ShoppingUtils
 
 		boolean gaveDamage = split.length == 2;
 		Material material;
-		Integer damage = 0;
+		Integer damage;
 
 		// id
 		String stringId = gaveDamage ? split[0] : input;
 		Integer numberId = Utils.getInt(stringId);
 
 		Alias alias = Alias.getAlias(stringId);
-		//		System.out.println("got alias");
 
 		// material name
-		material = numberId == null ? alias == null ? Material.getMaterial(stringId) : alias.getMaterial() : Material.getMaterial(numberId);
-		//		System.out.println("material = " + material);
+		if (numberId == null)
+			if (alias == null)
+				if (stringId.equalsIgnoreCase("hand"))
+					material = player.getItemInHand().getType();
+				else
+					material = Material.getMaterial(stringId);
+			else
+				material = alias.getMaterial();
+		else
+			material = Material.getMaterial(numberId);
 
 		// damage
 		damage = alias == null ? 0 : alias.getDamage();
-		//		System.out.println("aliasDamage = " + damage);
 
 		if (gaveDamage)
 		{
@@ -335,25 +341,34 @@ public class ShoppingUtils
 				return null;
 			damage = parsed;
 		}
-		//		System.out.println("damage = " + damage);
 
 		// invalid
 		if (material == null)
 			return null;
 
 		return new ItemStack(material, 1, damage.shortValue());
+
 	}
 
 	/**
 	 * Parses an input where a CommandSender enters it, and will notify the sender and return null if invalid.
 	 */
-	public static ItemStack parseInput(String input, CommandSender sender)
+	public static ItemStack parseInputAndMessage(Player player, String input)
 	{
-		ItemStack itemStack = parseInput(input);
+		ItemStack itemStack = parseInput(player, input);
 		if (itemStack == null)
-			Utils.message(sender, "&c'" + input + "' is not a valid item!");
+			Utils.message(player, "&c'" + input + "' is not a valid item!");
 		return itemStack;
 	}
 
 
+	/**
+	 * Gets the maximum amount of the item in hand that the player can buy.
+	 */
+	public static Double getMaxPurchase(Player player, GSItem gsItem)
+	{
+		int value = valueInventory(player);
+		Double price = gsItem.getRawPrice(true);
+		return Math.floor((double) value / price);
+	}
 }

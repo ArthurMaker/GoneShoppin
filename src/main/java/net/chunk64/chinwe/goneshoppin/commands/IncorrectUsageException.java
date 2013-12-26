@@ -6,9 +6,4 @@ public class IncorrectUsageException extends Exception
 	{
 		super();
 	}
-
-	public IncorrectUsageException(String message)
-	{
-		super(message);
-	}
 }

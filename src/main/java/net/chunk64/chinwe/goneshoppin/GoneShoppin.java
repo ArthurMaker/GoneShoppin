@@ -5,8 +5,10 @@ import net.chunk64.chinwe.goneshoppin.banking.Bank;
 import net.chunk64.chinwe.goneshoppin.banking.BankLimit;
 import net.chunk64.chinwe.goneshoppin.commands.Permission;
 import net.chunk64.chinwe.goneshoppin.commands.ShoppingCommand;
+import net.chunk64.chinwe.goneshoppin.commands.admin.CommandAdmin;
 import net.chunk64.chinwe.goneshoppin.commands.bank.CommandBalance;
 import net.chunk64.chinwe.goneshoppin.commands.bank.CommandBanking;
+import net.chunk64.chinwe.goneshoppin.commands.misc.CommandChange;
 import net.chunk64.chinwe.goneshoppin.commands.misc.CommandId;
 import net.chunk64.chinwe.goneshoppin.commands.misc.CommandMisc;
 import net.chunk64.chinwe.goneshoppin.commands.shop.CommandBuy;
@@ -15,6 +17,7 @@ import net.chunk64.chinwe.goneshoppin.items.Alias;
 import net.chunk64.chinwe.goneshoppin.items.GSItem;
 import net.chunk64.chinwe.goneshoppin.util.Config;
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
+import org.bukkit.permissions.PermissionRemovedExecutor;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.lang.reflect.Constructor;
@@ -71,6 +74,10 @@ public class GoneShoppin extends JavaPlugin
 		register("sell", CommandPrice.class, true, Permission.SELL);
 		register("buy", CommandBuy.class, true, Permission.BUY);
 		register("id", CommandId.class, true, Permission.ID);
+		register("setbalance", CommandAdmin.class, false, Permission.SET_BALANCE);
+		register("setlimit", CommandAdmin.class, false, Permission.SET_LIMIT);
+		register("cash", CommandChange.class, true, Permission.CASH);
+		register("simplify", CommandChange.class, true, Permission.SIMPLIFY);
 	}
 
 	private void register(String command, Class clazz, boolean playerOnly, Permission perm)

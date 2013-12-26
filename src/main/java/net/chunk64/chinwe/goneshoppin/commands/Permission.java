@@ -14,7 +14,10 @@ public enum Permission
 	VALUE("value your inventory", true), VALUE_OTHER("value others' inventories", false),
 	COUNT("count in your inventory", true), COUNT_OTHER("count in others' inventories", false),
 	PRICE("price items", true), ID(null, true),
-	SELL("sell items", true), BUY("buy items", true);
+	SELL("sell items", true), BUY("buy items", true),
+	SET_BALANCE("set players' balances", false), SET_BALANCE_OVERLIMIT("set players' balances over their limits", false),
+	SET_LIMIT("set players' limits", false),
+	CASH("cash your gold to nuggets", true), SIMPLIFY("simplify your gold", true);
 
 	private static final String PLUGIN_NAME = "goneshoppin";
 	private String message;

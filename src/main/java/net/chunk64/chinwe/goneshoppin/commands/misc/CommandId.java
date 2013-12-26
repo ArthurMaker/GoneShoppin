@@ -27,10 +27,10 @@ public class CommandId extends ShoppingCommand
 
 		// usage
 		if (args.length > 1)
-			throw new IncorrectUsageException("[material]");
+			throw new IncorrectUsageException();
 
 		// get itemstack
-		ItemStack itemStack = args.length == 0 ? player.getItemInHand() : ShoppingUtils.parseInput(args[0]);
+		ItemStack itemStack = args.length == 0 ? player.getItemInHand() : ShoppingUtils.parseInput(player, args[0]);
 		if (itemStack == null)
 			return;
 

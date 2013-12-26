@@ -1,11 +1,13 @@
 package net.chunk64.chinwe.goneshoppin.commands;
 
+import net.chunk64.chinwe.goneshoppin.items.GSItem;
 import net.chunk64.chinwe.goneshoppin.util.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
 public abstract class ShoppingCommand implements CommandExecutor
 {
@@ -52,7 +54,8 @@ public abstract class ShoppingCommand implements CommandExecutor
 			Utils.message(sender, "&c" + Utils.stripColour(e.getMessage()));
 		} catch (IncorrectUsageException e)
 		{
-			Utils.message(sender, "&cUsage: /" + cmd.getName() + (e.getMessage() != null ? " " + Utils.stripColour(e.getMessage()) : ""));
+			Utils.message(sender, "&cUsage: " + cmd.getUsage());
+//			Utils.message(sender, "&cUsage: /" + cmd.getUsage() + (e.getMessage() != null ? " " + Utils.stripColour(e.getMessage()) : ""));
 		} catch (Exception e)
 		{
 			Utils.message(sender, "&cError: " + (e.getMessage() == null ? e : Utils.stripColour(e.getMessage())));
@@ -71,6 +74,19 @@ public abstract class ShoppingCommand implements CommandExecutor
 		return player;
 	}
 
+	protected void checkMultiples(GSItem gsItem, ItemStack itemStack, boolean buying)
+	{
+		int minAmount = gsItem.getPerTransaction(buying);
+		if (itemStack.getAmount() % minAmount != 0)
+		{
+			// has more
+			if (itemStack.getAmount() > minAmount)
+				itemStack.setAmount((itemStack.getAmount() / minAmount) * minAmount);
+			else
+				throw new IllegalArgumentException("You can only sell that item in multiples of " + minAmount + "!");
+		}
+	}
+
 	public static Player getPlayer(CommandSender sender, String name)
 	{
 		Player player = Bukkit.getPlayer(name);
@@ -78,5 +94,6 @@ public abstract class ShoppingCommand implements CommandExecutor
 			Utils.message(sender, "&c'" + name + "' is not online!");
 		return player;
 	}
+
 
 }

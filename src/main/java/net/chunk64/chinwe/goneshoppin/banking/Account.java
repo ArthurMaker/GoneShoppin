@@ -47,7 +47,15 @@ public class Account implements ConfigurationSerializable
 		return limit;
 	}
 
+	public void setLimit(BankLimit limit)
+	{
+		this.limit = limit;
+	}
 
+	public void setBalance(Integer newBalance)
+	{
+		this.balance = new BigDecimal(newBalance);
+	}
 
 	@SuppressWarnings("unused")
 	public Account(Map<String, Object> map)

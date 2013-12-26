@@ -23,8 +23,23 @@ public enum BankLimit
 		}
 	}
 
+	public static BankLimit match(String input)
+	{
+		for (BankLimit limit : values())
+			if (input.equalsIgnoreCase(limit.toString()))
+				return limit;
+		return null;
+	}
+
 	public BigDecimal getAmount()
 	{
 		return amount;
+	}
+
+	public String toAmount()
+	{
+		if (this == UNLIMITED)
+			return "infinite GN";
+		return getAmount() + "GN";
 	}
 }

@@ -1,5 +1,6 @@
 package net.chunk64.chinwe.goneshoppin.util;
 
+import net.chunk64.chinwe.goneshoppin.banking.BankLimit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
@@ -22,18 +23,18 @@ public class Utils
 	/**
 	 * Formats a list with "and" or "or" between the last two elements
 	 */
-	public static String formatList(List<String> list, boolean and)
+	public static String formatList(List<BankLimit> list, boolean and)
 	{
 		StringBuilder sb = new StringBuilder();
 		for (int i = 0; i < list.size(); i++)
 		{
-			String st = list.get(i);
+			String st = list.get(i).toString().toLowerCase();
 			if (i == list.size() - 1)
 				sb.append(st);
 			else if (i == list.size() - 2)
-				sb.append(st + (and ? " and " : " or "));
+				sb.append(st).append(and ? " and " : " or ");
 			else
-				sb.append(st + ", ");
+				sb.append(st).append(", ");
 
 		}
 		return sb.toString();
@@ -94,5 +95,10 @@ public class Utils
 		return list.toArray(new ItemStack[list.size()]);
 	}
 
+	// Required CraftBukkit
+	//	public static String getName(ItemStack itemStack)
+	//	{
+	//		return CraftItemStack.asNMSCopy(itemStack).getName();
+	//	}
 
 }

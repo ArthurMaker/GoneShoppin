@@ -31,14 +31,11 @@ public class CommandPrice extends ShoppingCommand
 		boolean price = commandName.equals("price");
 
 		// usage
-		if (price && args.length > 2)
-			throw new IncorrectUsageException("[material] [amount]");
-		if (!price && args.length > 1)
-			throw new IncorrectUsageException("[amount]");
+		if (price && args.length > 2 || !price && args.length > 1)
+			throw new IncorrectUsageException();
 
 		// get itemstack
-		ItemStack itemStack = (!price ? player.getItemInHand() : args.length == 0 ? player.getItemInHand() : ShoppingUtils.parseInput(args[0], sender));
-
+		ItemStack itemStack = (!price ? player.getItemInHand() : args.length == 0 ? player.getItemInHand() : ShoppingUtils.parseInputAndMessage(player, args[0]));
 		if (itemStack == null)
 			return;
 
@@ -47,9 +44,11 @@ public class CommandPrice extends ShoppingCommand
 		// get amount
 		if ((price && args.length == 2) || !price && args.length == 1)
 		{
-			Integer amount = Utils.getInt(args[price ? 1 : 0]);
+			String input = args[price ? 1 : 0];
+			Integer amount;
+			amount = input.equalsIgnoreCase("all") ? Integer.valueOf(ShoppingUtils.countInInventory(player, itemStack)) : Utils.getInt(input);
 			if (amount == null)
-				throw new IllegalArgumentException("Invalid amount given!");
+				throw new IncorrectUsageException();
 			itemStack.setAmount(amount);
 		}
 
@@ -66,24 +65,32 @@ public class CommandPrice extends ShoppingCommand
 		if (gsItem == null)
 			throw new IllegalArgumentException(name + " could not be priced!");
 
+
 		// price it
 		if (price)
 		{
 			name = "&6" + itemStack.getAmount() + "&fx " + name;
-			String[] notes = {gsItem.getNote(true), gsItem.getNote(false)};
+			String note = gsItem.getNote();
 
+			// TODO reformat
 			Utils.message(sender, (args.length == 0 ? "That " : "") + name + " costs:");
-			Utils.message(sender, "To buy: &b" + gsItem.getFormattedPrice(true, itemStack.getAmount()) + (!notes[0].isEmpty() ? "\n    &f- &3" + notes[0] : ""));
-			Utils.message(sender, "To sell: &b" + gsItem.getFormattedPrice(false, itemStack.getAmount()) + (!notes[1].isEmpty() ? "\n    &f- &3" + notes[1] : ""));
+			Utils.message(sender, formatPrice(gsItem, itemStack, true));
+			Utils.message(sender, formatPrice(gsItem, itemStack, false));
+			if (!note.isEmpty())
+				Utils.message(sender, "  &f- &b" + note);
 			sender.sendMessage("§8----------------");
 			return;
 		}
 
-		Integer sellPrice = gsItem.getPrice(false, itemStack.getAmount());
-
-		// validation
+		// sell it
+		Double sellPrice = gsItem.getRawPrice(false, itemStack.getAmount());
 		if (sellPrice == null)
-			throw new IllegalArgumentException("You cannot sell that!");
+			throw new IllegalArgumentException("You cannot sell that item!");
+
+		// check amount
+		checkMultiples(gsItem, itemStack, false);
+
+		int finalSellPrice = sellPrice.intValue();
 
 		// damaged tool
 		if (Utils.isDamagedTool(itemStack))
@@ -94,14 +101,24 @@ public class CommandPrice extends ShoppingCommand
 		if (invAmount < itemStack.getAmount())
 			throw new IllegalArgumentException("You only have " + invAmount + " in your inventory!");
 
+		final int amount = itemStack.getAmount();
+
 		// remove from inv
 		ShoppingUtils.removeFromInventory(player, itemStack, itemStack.getAmount());
 
 		// give money
-		if (ShoppingUtils.giveGold(player, sellPrice))
+		if (ShoppingUtils.giveGold(player, finalSellPrice))
 			Utils.message(sender, "&7Dropping excess money onto the floor!");
 
-		Utils.message(sender, String.format("You sold &6%d&fx %s &ffor &6%dGN&f!", itemStack.getAmount(), name, sellPrice));
+
+		Utils.message(sender, String.format("You sold &6%d&fx %s &ffor &6%dGN&f!", amount, name, finalSellPrice));
 
 	}
+
+	private String formatPrice(GSItem gsItem, ItemStack itemStack, boolean buying)
+	{
+		int per = gsItem.getPerTransaction(buying);
+		return "To " + (buying ? "buy" : "sell") + ": &b" + gsItem.getFormattedRawPrice(buying, itemStack.getAmount()) + (per == 1 ? "" : " &a| &7in multiples of &8" + per);
+	}
+
 }

@@ -22,12 +22,12 @@ public class GSItem
 	private Material material;
 	private int damage;
 
-	private Integer buyingPrice, sellingPrice;
+	private double buyingPrice, sellingPrice;
 	private int perBuy, perSell;
-	private String buyNote, sellNote;
+	private String note;
 
 
-	public GSItem(Alias alias, Material material, int damage, Integer buyingPrice, Integer sellingPrice, Integer perBuy, Integer perSell, String buyNote, String sellNote)
+	public GSItem(Alias alias, Material material, int damage, double buyingPrice, double sellingPrice, Integer perBuy, Integer perSell, String note)
 	{
 		this.alias = alias;
 		this.material = material;
@@ -36,8 +36,7 @@ public class GSItem
 		this.sellingPrice = sellingPrice;
 		this.perBuy = perBuy;
 		this.perSell = perSell;
-		this.buyNote = buyNote;
-		this.sellNote = sellNote;
+		this.note = note;
 		instances.add(this);
 	}
 
@@ -68,26 +67,30 @@ public class GSItem
 		}
 
 
-		String prefix = "blocks." + material.toString().replace(" ", "_").toUpperCase();
+		String prefix = "prices." + material.toString();
+
+		if (!yml.contains(prefix))
+			return;
 
 		// loop through subs
 		for (String damage : yml.getConfigurationSection(prefix + ".subs").getKeys(false))
 		{
 			int data = Utils.getInt(damage);
-			String subPrefix = prefix + ".subs." + damage;
+			String subPrefix = prefix + ".subs." + damage + ".";
 
-//			String name = yml.getString(subPrefix + ".name");
-//			String altName = yml.getString(subPrefix + ".alt-name");
 
-			Integer buy = yml.getInt(subPrefix + ".buy.price"), sell = yml.getInt(subPrefix + ".sell.price");
-			String buyNote = yml.getString(subPrefix + ".buy.note"), sellNote = yml.getString(subPrefix + ".sell.note");
+			Double singleBuy = yml.getDouble(subPrefix + "buy.single");
+			Double singleSell = yml.getDouble(subPrefix + "sell.single");
+			Integer perBuy = yml.getInt(subPrefix + "buy.minimum");
+			Integer perSell = yml.getInt(subPrefix + "sell.minimum");
+			String note = yml.getString(subPrefix + ".note");
+
 
 			// get aliases
 			Alias alias = Alias.getAlias(material, data);
 
 			// finally create gsitem
-			// TODO load perBuy/perSell
-			new GSItem(alias, material, data, buy, sell, 1, 1, buyNote, sellNote);
+			new GSItem(alias, material, data, singleBuy, singleSell, perBuy, perSell, note);
 		}
 	}
 
@@ -136,7 +139,7 @@ public class GSItem
 	@Override
 	public String toString()
 	{
-		return String.format("GSItem{material=%s, damage=%d, buyPrice=%d, sellPrice=%d, buyNote=%s, sellNote=%s}", material.toString(), damage, buyingPrice, sellingPrice, buyNote, sellNote);
+		return String.format("GSItem{material=%s, damage=%d, buyPrice=%f, sellPrice=%f, note=%s}", material.toString(), damage, buyingPrice, sellingPrice, note);
 	}
 
 	@Override
@@ -164,27 +167,48 @@ public class GSItem
 		return damage;
 	}
 
+	//	/**
+	//	 * Returns the price x amount given - will return null if price is 0
+	//	 */
+	//	public Integer getPrice(boolean buying, int amount)
+	//	{
+	//		Double price = (buying ? buyingPrice : sellingPrice) * amount;
+	//		if (price == 0)
+	//			return null;
+	//		return price;
+	//	}
+	//
+	//	/**
+	//	 * Returns the price of 1 - will return null if price is 0
+	//	 */
+	//	public Integer getPrice(boolean buying)
+	//	{
+	//		return getPrice(buying, 1);
+	//	}
+
+
 	/**
-	 * Returns the price x amount given - will return null if price is 0
+	 * Gets the raw decimal price for the specified amount
 	 */
-	public Integer getPrice(boolean buying, int amount)
+	public Double getRawPrice(boolean buying, int amount)
 	{
-		Integer price = (buying ? buyingPrice : sellingPrice) * amount;
+		double price = buying ? buyingPrice : sellingPrice;
 		if (price == 0)
 			return null;
-		return price;
-	}
-	/**
-	 * Returns the price of 1 - will return null if price is 0
-	 */
-	public Integer getPrice(boolean buying)
-	{
-		return getPrice(buying, 1);
+		if (amount < 0)
+			amount = 1;
+
+		return price * amount;
 	}
 
-	public String getFormattedPrice(boolean buying, int amount)
+	public Double getRawPrice(boolean buying)
 	{
-		Integer price = getPrice(buying, amount);
+		return getRawPrice(buying, 1);
+	}
+
+	public String getFormattedRawPrice(boolean buying, int amount)
+	{
+		Double price = getRawPrice(buying, amount);
 		if (price == null)
 			return "&cCannot be " + (buying ? "bought" : "sold") + ".";
 		return "&6" + price + "GN";
@@ -198,9 +222,8 @@ public class GSItem
 		return amount;
 	}
 
-	public String getNote(boolean buying)
+	public String getNote()
 	{
-		String note = buying ? buyNote : sellNote;
 		if (note == null)
 			return "";
 		return note;

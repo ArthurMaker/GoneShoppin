@@ -10,113 +10,111 @@ import net.chunk64.chinwe.goneshoppin.util.Utils;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
-
-import java.util.HashMap;
 
 public class CommandBanking extends ShoppingCommand
 {
 
-	public CommandBanking(Permission perm, boolean playerOnly, String command)
-	{
-		super(perm, playerOnly, command);
-	}
+    public CommandBanking(Permission perm, boolean playerOnly, String command)
+    {
+        super(perm, playerOnly, command);
+    }
 
-	private enum CommandType
-	{
-		WITHDRAW, DEPOSIT, STEAL
-	}
+    // withdraw all
+    // deposit max
+    // steal all
+    private enum CommandType
+    {
+        WITHDRAW, DEPOSIT, STEAL
+    }
 
-	@Override
-	public void run(CommandSender sender, Command cmd, String[] args) throws Exception
-	{
-		Player player = (Player) sender;
-		Account account = Bank.getInstance().getAccount(player.getName());
+    @Override
+    public void run(CommandSender sender, Command cmd, String[] args) throws Exception
+    {
+        Player player = (Player) sender;
+        Account account = Bank.getInstance().getAccount(player.getName());
 
-		CommandType ct = CommandType.valueOf(cmd.getName().toUpperCase());
+        CommandType ct = CommandType.valueOf(cmd.getName().toUpperCase());
 
-		// usage
-		if (ct == CommandType.STEAL)
-		{
-			if (args.length != 2)
-				throw new IncorrectUsageException("<amount> <player name>");
-		} else if (args.length != 1)
-			throw new IncorrectUsageException("<amount>");
+        // usage
+        if ((ct == CommandType.STEAL && args.length != 2) || ct != CommandType.STEAL && args.length != 1)
+            throw new IncorrectUsageException();
 
-		// how much?
-		Integer amount = Utils.getInt(args[0]);
-		if (amount == null)
-			throw new NumberFormatException("You can only " + cmd.getName() + " GN in integer amounts!");
+        // how much?
+        Integer amount = Utils.getInt(args[0]);
 
-		// check amounts
-		if (amount < 1)
-			throw new IllegalArgumentException("You can't " + cmd.getName() + " amounts under 1GN!");
+        if (args[0].equalsIgnoreCase("all"))
+            amount = ct == CommandType.DEPOSIT ? ShoppingUtils.valueInventory(player) : account.getBalance().intValue();
 
-		int limit = account.getLimit().getAmount().intValue();
-		int balance = account.getBalance().intValue();
+        if (amount == null)
+            throw new IllegalArgumentException("Please enter an integer amount of GN, or 'all' to " + (ct == CommandType.DEPOSIT ? "deposit all your gold" : "empty the account") + ".");
 
-		// depositing
-		if (ct == CommandType.DEPOSIT)
-		{
-			// check inv
-			int value = ShoppingUtils.valueInventory(player);
-			if (value < amount)
-				throw new IllegalArgumentException("You need an extra " + (amount - value) + " GN to deposit that much!");
+        // check amounts
+        if (amount < 1)
+            throw new IllegalArgumentException("You can't " + cmd.getName() + " amounts under 1GN!");
 
-			// check limit
-			if (limit < balance + amount)
-				throw new IllegalArgumentException("Depositing that much would take you over your limit of " + limit + "GN!");
+        int limit = account.getLimit().getAmount().intValue();
+        int balance = account.getBalance().intValue();
 
-			// remove from inv
-			ShoppingUtils.takeGold(player, amount);
+        // depositing
+        if (ct == CommandType.DEPOSIT)
+        {
+            // check inv
+            int value = ShoppingUtils.valueInventory(player);
+            if (value < amount)
+                throw new IllegalArgumentException("You need an extra " + (amount - value) + " GN to deposit that much!");
 
-			// add to bank
-			account.deposit(amount);
+            // check limit
+            if (limit < balance + amount)
+                throw new IllegalArgumentException("Depositing that much would take you over your limit of " + limit + "GN!");
 
-			// message
-			Utils.message(sender, "You &bdeposited &6" + amount + "GN&f!");
-		}
+            // remove from inv
+            ShoppingUtils.takeGold(player, amount);
 
-		// withdrawing and stealing
-		else
-		{
+            // add to bank
+            account.deposit(amount);
 
-			// steal
-			if (ct == CommandType.STEAL)
-			{
-				account = Bank.getInstance().getAccountFuzzily(args[1]);
-				if (account == null)
-					throw new IllegalArgumentException("Bank account for " + args[0] + " was not found!");
-				//				if (account.getName().equals(player.getName()))
-				//					throw new IllegalArgumentException("You can't steal from yourself");
-			}
+            // message
+            Utils.message(sender, "You &bdeposited &6" + amount + "GN&f!");
+        }
 
-			if (!account.hasBalance(amount))
-				throw new IllegalArgumentException(String.format("%s bank is %dGN short of %dGN!", ct == CommandType.STEAL ? "That" : "Your", (amount - balance), amount));
+        // withdrawing and stealing
+        else
+        {
+            // steal
+            if (ct == CommandType.STEAL)
+            {
+                account = Bank.getInstance().getAccountFuzzily(args[1]);
+                if (account == null)
+                    throw new IllegalArgumentException("Bank account for " + args[0] + " was not found!");
+            }
 
-			// give as much as possible
-			HashMap<Integer, ItemStack> overflowGold = ShoppingUtils.addGoldToInventory(player, amount);
+            if (!account.hasBalance(amount))
+                throw new IllegalArgumentException(String.format("%s bank is %dGN short of %dGN!", ct == CommandType.STEAL ? "That" : "Your", (amount - balance), amount));
 
-			if (!overflowGold.isEmpty())
-			{
-				int overflow = 0;
-				for (ItemStack itemStack : overflowGold.values())
-					overflow += ShoppingUtils.value(itemStack);
-				amount -= overflow;
-				if (amount <= 0)
-					throw new IllegalArgumentException("There is no room in your inventory!");
-				Utils.message(sender, "&7The amount was reduced to &8" + amount + "GN&7, as there isn't room in your inventory for more!");
-			}
+            // give gold
+            ShoppingUtils.giveGold(player, amount);
 
-			// take from bank
-			account.withdraw(amount);
+            //			HashMap<Integer, ItemStack> overflowGold = ShoppingUtils.addGoldToInventory(player, amount);
+            //			if (!overflowGold.isEmpty())
+            //			{
+            //				int overflow = 0;
+            //				for (ItemStack itemStack : overflowGold.values())
+            //					overflow += ShoppingUtils.value(itemStack);
+            //				amount -= overflow;
+            //				if (amount <= 0)
+            //					throw new IllegalArgumentException("There is no room in your inventory!");
+            //				Utils.message(sender, "&7The amount was reduced to &8" + amount + "GN&7, as there isn't room in your inventory for more!");
+            //			}
 
-			// message
-			Utils.message(sender, String.format("You &b%s &6%dGN&f%s!", ct == CommandType.STEAL ? "stole" : "withdrew", amount, ct == CommandType.STEAL ? " from &b" + account.getName() + "&f" : ""));
-		}
+            // take from bank
+            account.withdraw(amount);
 
-			// final balance
-			Utils.message(sender, "&f" + (ct == CommandType.STEAL ? "Their" : "Your") + " &bnew &fbalance is &6" + account.getBalance().intValue() + "GN&f!");
+            // message
+            Utils.message(sender, String.format("You &b%s &6%dGN&f%s!", ct == CommandType.STEAL ? "stole" : "withdrew", amount, ct == CommandType.STEAL ? " from &b" + account.getName() + "&f" : ""));
+        }
 
-	}
+        // final balance
+        Utils.message(sender, "&f" + (ct == CommandType.STEAL ? "Their" : "Your") + " &bnew &fbalance is &6" + account.getBalance().intValue() + "GN&f!");
+
+    }
 }

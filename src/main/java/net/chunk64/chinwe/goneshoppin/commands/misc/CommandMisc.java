@@ -27,7 +27,7 @@ public class CommandMisc extends ShoppingCommand
 
 		// usage
 		if (args.length > 1)
-			throw new IncorrectUsageException("[player]");
+			throw new IncorrectUsageException();
 
 		// get target
 		Player target = args.length == 0 ? player : getPlayer(sender, args[0]);
