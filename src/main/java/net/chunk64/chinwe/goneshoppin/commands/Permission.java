@@ -17,7 +17,8 @@ public enum Permission
 	SELL("sell items", true), BUY("buy items", true),
 	SET_BALANCE("set players' balances", false), SET_BALANCE_OVERLIMIT("set players' balances over their limits", false),
 	SET_LIMIT("set players' limits", false),
-	CASH("cash your gold to nuggets", true), SIMPLIFY("simplify your gold", true);
+	CASH("cash your gold to nuggets", true), SIMPLIFY("simplify your gold", true), SET_PRICE("set prices", false), SET_NOTE("set notes", false),
+	ALERT("receive transaction alerts", false);
 
 	private static final String PLUGIN_NAME = "goneshoppin";
 	private String message;

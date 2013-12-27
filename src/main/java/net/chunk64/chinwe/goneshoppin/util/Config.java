@@ -13,6 +13,7 @@ public class Config
 	private Plugin plugin;
 
 	public static BankLimit DefaultLimit;
+	public static boolean ConsoleLog;
 
 
 	public Config(Plugin plugin)
@@ -25,6 +26,7 @@ public class Config
 
 		// load values
 		DefaultLimit = BankLimit.valueOf(config.getString("bank.default-limit").toUpperCase());
+		ConsoleLog = config.getBoolean("console-log");
 
 	}
 

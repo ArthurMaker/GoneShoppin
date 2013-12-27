@@ -6,6 +6,7 @@ import net.chunk64.chinwe.goneshoppin.banking.BankLimit;
 import net.chunk64.chinwe.goneshoppin.commands.Permission;
 import net.chunk64.chinwe.goneshoppin.commands.ShoppingCommand;
 import net.chunk64.chinwe.goneshoppin.commands.admin.CommandAdmin;
+import net.chunk64.chinwe.goneshoppin.commands.admin.CommandSetPrice;
 import net.chunk64.chinwe.goneshoppin.commands.bank.CommandBalance;
 import net.chunk64.chinwe.goneshoppin.commands.bank.CommandBanking;
 import net.chunk64.chinwe.goneshoppin.commands.misc.CommandChange;
@@ -15,6 +16,8 @@ import net.chunk64.chinwe.goneshoppin.commands.shop.CommandBuy;
 import net.chunk64.chinwe.goneshoppin.commands.shop.CommandPrice;
 import net.chunk64.chinwe.goneshoppin.items.Alias;
 import net.chunk64.chinwe.goneshoppin.items.GSItem;
+import net.chunk64.chinwe.goneshoppin.listeners.ShoppinListener;
+import net.chunk64.chinwe.goneshoppin.logging.GSLogger;
 import net.chunk64.chinwe.goneshoppin.util.Config;
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -48,6 +51,7 @@ public class GoneShoppin extends JavaPlugin
 		GSItem.unload();
 		instance = null;
 		config = null;
+		GSLogger.unload();
 	}
 
 	private void init()
@@ -60,6 +64,7 @@ public class GoneShoppin extends JavaPlugin
 		Alias.loadFromFile();
 		GSItem.loadFile(this);
 
+		new GSLogger(this);
 	}
 
 	private void registerCommands()
@@ -78,6 +83,8 @@ public class GoneShoppin extends JavaPlugin
 		register("setlimit", CommandAdmin.class, false, Permission.SET_LIMIT);
 		register("cash", CommandChange.class, true, Permission.CASH);
 		register("simplify", CommandChange.class, true, Permission.SIMPLIFY);
+		register("setprice", CommandSetPrice.class, false, Permission.SET_PRICE);
+		register("setnote", CommandSetPrice.class, false, Permission.SET_NOTE);
 	}
 
 	private void register(String command, Class clazz, boolean playerOnly, Permission perm)

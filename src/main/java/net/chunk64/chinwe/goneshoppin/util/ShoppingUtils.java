@@ -6,6 +6,7 @@ import net.chunk64.chinwe.goneshoppin.items.Alias;
 import net.chunk64.chinwe.goneshoppin.items.GSItem;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
@@ -299,8 +300,10 @@ public class ShoppingUtils
 	 * wood:2
 	 * 95
 	 * 95:3
+	 * hand
+	 * hand:5
 	 */
-	public static ItemStack parseInput(Player player, String input)
+	public static ItemStack parseInput(CommandSender sender, String input)
 	{
 		String[] split = input.split(":");
 
@@ -320,7 +323,7 @@ public class ShoppingUtils
 
 		// material name
 		if (numberId == null)
-			material = alias == null ? stringId.equalsIgnoreCase("hand") ? player.getItemInHand().getType() : Material.getMaterial(stringId) : alias.getMaterial();
+			material = alias == null ? sender instanceof Player && stringId.equalsIgnoreCase("hand") ? ((Player) sender).getItemInHand().getType() : Material.getMaterial(stringId) : alias.getMaterial();
 		else
 			material = Material.getMaterial(numberId);
 
@@ -346,11 +349,11 @@ public class ShoppingUtils
 	/**
 	 * Parses an input where a CommandSender enters it, and will notify the sender and return null if invalid.
 	 */
-	public static ItemStack parseInputAndMessage(Player player, String input)
+	public static ItemStack parseInputAndMessage(CommandSender sender, String input)
 	{
-		ItemStack itemStack = parseInput(player, input);
+		ItemStack itemStack = parseInput(sender, input);
 		if (itemStack == null)
-			Utils.message(player, "&c'" + input + "' is not a valid item!");
+			Utils.message(sender, "&c'" + input + "' is not a valid item!");
 		return itemStack;
 	}
 
@@ -364,4 +367,18 @@ public class ShoppingUtils
 		Double price = gsItem.getRawPrice(true);
 		return Math.floor((double) value / price);
 	}
+
+	/** Sends the buy and sell prices to a player, including minimum amount */
+	public static void sendPrices(CommandSender player, GSItem gsItem, ItemStack itemStack)
+	{
+		Utils.message(player, formatPrice(gsItem, itemStack, true));
+		Utils.message(player, formatPrice(gsItem, itemStack, false));
+	}
+
+	private static String formatPrice(GSItem gsItem, ItemStack itemStack, boolean buying)
+	{
+		int per = gsItem.getPerTransaction(buying);
+		return "To " + (buying ? "buy" : "sell") + ": &b" + gsItem.getFormattedRawPrice(buying, itemStack.getAmount()) + (per == 1 ? "" : " &a| &7in multiples of &8" + per);
+	}
+
 }

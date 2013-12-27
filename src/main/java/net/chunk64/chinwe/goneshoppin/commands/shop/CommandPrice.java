@@ -4,6 +4,9 @@ import net.chunk64.chinwe.goneshoppin.commands.IncorrectUsageException;
 import net.chunk64.chinwe.goneshoppin.commands.Permission;
 import net.chunk64.chinwe.goneshoppin.commands.ShoppingCommand;
 import net.chunk64.chinwe.goneshoppin.items.GSItem;
+import net.chunk64.chinwe.goneshoppin.logging.Action;
+import net.chunk64.chinwe.goneshoppin.logging.GSLogger;
+import net.chunk64.chinwe.goneshoppin.logging.actions.TransactionAction;
 import net.chunk64.chinwe.goneshoppin.util.ShoppingUtils;
 import net.chunk64.chinwe.goneshoppin.util.Utils;
 import org.bukkit.Material;
@@ -72,10 +75,8 @@ public class CommandPrice extends ShoppingCommand
 			name = "&6" + itemStack.getAmount() + "&fx " + name;
 			String note = gsItem.getNote();
 
-			// TODO reformat
 			Utils.message(sender, (args.length == 0 ? "That " : "") + name + " costs:");
-			Utils.message(sender, formatPrice(gsItem, itemStack, true));
-			Utils.message(sender, formatPrice(gsItem, itemStack, false));
+			ShoppingUtils.sendPrices(player, gsItem, itemStack);
 			if (!note.isEmpty())
 				Utils.message(sender, "  &f- &b" + note);
 			sender.sendMessage("§8----------------");
@@ -112,13 +113,7 @@ public class CommandPrice extends ShoppingCommand
 
 
 		Utils.message(sender, String.format("You sold &6%d&fx %s &ffor &6%dGN&f!", amount, name, finalSellPrice));
-
-	}
-
-	private String formatPrice(GSItem gsItem, ItemStack itemStack, boolean buying)
-	{
-		int per = gsItem.getPerTransaction(buying);
-		return "To " + (buying ? "buy" : "sell") + ": &b" + gsItem.getFormattedRawPrice(buying, itemStack.getAmount()) + (per == 1 ? "" : " &a| &7in multiples of &8" + per);
+		GSLogger.log(new TransactionAction(player.getName(), Action.SELL, itemStack, amount, finalSellPrice));
 	}
 
 }

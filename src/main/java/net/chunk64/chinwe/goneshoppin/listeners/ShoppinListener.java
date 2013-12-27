@@ -1,4 +1,4 @@
-package net.chunk64.chinwe.goneshoppin;
+package net.chunk64.chinwe.goneshoppin.listeners;
 
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;

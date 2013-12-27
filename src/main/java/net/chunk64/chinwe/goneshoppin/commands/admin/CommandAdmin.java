@@ -6,6 +6,9 @@ import net.chunk64.chinwe.goneshoppin.banking.BankLimit;
 import net.chunk64.chinwe.goneshoppin.commands.IncorrectUsageException;
 import net.chunk64.chinwe.goneshoppin.commands.Permission;
 import net.chunk64.chinwe.goneshoppin.commands.ShoppingCommand;
+import net.chunk64.chinwe.goneshoppin.logging.Action;
+import net.chunk64.chinwe.goneshoppin.logging.GSLogger;
+import net.chunk64.chinwe.goneshoppin.logging.actions.AdminBankAction;
 import net.chunk64.chinwe.goneshoppin.util.Utils;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -57,6 +60,8 @@ public class CommandAdmin extends ShoppingCommand
 			value = limit.toAmount();
 		}
 		Utils.message(sender, String.format("You set &b%s&f's %s to &6%s&f!", account.getName(), balance ? "balance" : "bank limit", value));
+
+		GSLogger.log(new AdminBankAction(sender.getName(), balance ? Action.SET_BALANCE : Action.SET_LIMIT, account));
 	}
 
 }

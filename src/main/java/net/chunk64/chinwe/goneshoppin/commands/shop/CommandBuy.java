@@ -4,6 +4,9 @@ import net.chunk64.chinwe.goneshoppin.commands.IncorrectUsageException;
 import net.chunk64.chinwe.goneshoppin.commands.Permission;
 import net.chunk64.chinwe.goneshoppin.commands.ShoppingCommand;
 import net.chunk64.chinwe.goneshoppin.items.GSItem;
+import net.chunk64.chinwe.goneshoppin.logging.Action;
+import net.chunk64.chinwe.goneshoppin.logging.GSLogger;
+import net.chunk64.chinwe.goneshoppin.logging.actions.TransactionAction;
 import net.chunk64.chinwe.goneshoppin.util.ShoppingUtils;
 import net.chunk64.chinwe.goneshoppin.util.Utils;
 import org.bukkit.Material;
@@ -42,8 +45,8 @@ public class CommandBuy extends ShoppingCommand
 		{
 			boolean max = args[1].equalsIgnoreCase("max");
 			amount = max ? -1 : Utils.getInt(args[1]);
-			if (amount == null)
-				throw new IllegalArgumentException("Invalid amount given!");
+//			if (amount == null)
+//				throw new IllegalArgumentException("Invalid amount given!");
 			if (!max && amount < 1)
 				throw new IllegalArgumentException("You cannot buy an amount less than 1!");
 		} else
@@ -94,6 +97,8 @@ public class CommandBuy extends ShoppingCommand
 		ShoppingUtils.giveItems(player, itemStack);
 
 		Utils.message(sender, String.format("You bought &6%d&fx %s &ffor &6%dGN&f!", finalAmount, name, finalBuyPrice));
+
+		GSLogger.log(new TransactionAction(player.getName(), Action.BUY, itemStack, finalAmount, finalBuyPrice));
 
 	}
 }

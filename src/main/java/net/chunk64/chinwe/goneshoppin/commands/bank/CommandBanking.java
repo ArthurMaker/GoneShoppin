@@ -5,6 +5,9 @@ import net.chunk64.chinwe.goneshoppin.banking.Bank;
 import net.chunk64.chinwe.goneshoppin.commands.IncorrectUsageException;
 import net.chunk64.chinwe.goneshoppin.commands.Permission;
 import net.chunk64.chinwe.goneshoppin.commands.ShoppingCommand;
+import net.chunk64.chinwe.goneshoppin.logging.Action;
+import net.chunk64.chinwe.goneshoppin.logging.GSLogger;
+import net.chunk64.chinwe.goneshoppin.logging.actions.BankAction;
 import net.chunk64.chinwe.goneshoppin.util.ShoppingUtils;
 import net.chunk64.chinwe.goneshoppin.util.Utils;
 import org.bukkit.command.Command;
@@ -19,9 +22,6 @@ public class CommandBanking extends ShoppingCommand
 		super(perm, playerOnly, command);
 	}
 
-	// withdraw all
-	// deposit max
-	// steal all
 	private enum CommandType
 	{
 		WITHDRAW, DEPOSIT, STEAL
@@ -115,6 +115,7 @@ public class CommandBanking extends ShoppingCommand
 
 		// final balance
 		Utils.message(sender, "&f" + (ct == CommandType.STEAL ? "Their" : "Your") + " &bnew &fbalance is &6" + account.getBalance().intValue() + "GN&f!");
+		GSLogger.log(new BankAction(player.getName(), Action.valueOf(ct.toString()), account, amount));
 
 	}
 }

@@ -52,7 +52,19 @@ public class Utils
 		{
 			return null;
 		}
-
+	}
+	/**
+	 * Attempts to convert a string to an double -> returns null otherwise
+	 */
+	public static Double getDouble(String s)
+	{
+		try
+		{
+			return Double.parseDouble(s);
+		} catch (NumberFormatException e)
+		{
+			return null;
+		}
 	}
 
 	/**

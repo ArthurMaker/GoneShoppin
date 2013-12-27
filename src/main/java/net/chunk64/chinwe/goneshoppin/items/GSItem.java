@@ -9,12 +9,14 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.ItemStack;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 
 public class GSItem
 {
 	private static FileConfiguration yml;
+	private static File file;
 
 	private static Set<GSItem> instances = new HashSet<GSItem>();
 
@@ -42,15 +44,15 @@ public class GSItem
 
 	public static void loadFile(GoneShoppin plugin)
 	{
-		File pFile = new File(plugin.getDataFolder(), "prices.yml");
-		if (!pFile.exists())
+		file = new File(plugin.getDataFolder(), "prices.yml");
+		if (!file.exists())
 		{
 			plugin.saveResource("prices.yml", true);
 			plugin.getLogger().warning("Could not find prices.yml, creating...");
 		} else
 			plugin.getLogger().info("prices.yml found, loading...");
 
-		yml = YamlConfiguration.loadConfiguration(pFile);
+		yml = YamlConfiguration.loadConfiguration(file);
 	}
 
 	/**
@@ -230,6 +232,22 @@ public class GSItem
 		if (note == null)
 			return "";
 		return note;
+	}
+
+	public static FileConfiguration getYml()
+	{
+		return yml;
+	}
+
+	public static void saveYml()
+	{
+		try
+		{
+			yml.save(file);
+		} catch (IOException e)
+		{
+			e.printStackTrace();
+		}
 	}
 }
 
