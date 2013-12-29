@@ -5,6 +5,7 @@ import org.bukkit.configuration.Configuration;
 import org.bukkit.plugin.Plugin;
 
 import java.io.File;
+import java.util.List;
 
 public class Config
 {
@@ -13,7 +14,8 @@ public class Config
 	private Plugin plugin;
 
 	public static BankLimit DefaultLimit;
-	public static boolean ConsoleLog;
+	public static boolean ConsoleLog, PriceProtection;
+	public static List<String> PriceAdmins;
 
 
 	public Config(Plugin plugin)
@@ -24,10 +26,16 @@ public class Config
 		if (!configFile.exists())
 			plugin.saveDefaultConfig();
 
-		// load values
+		load();
+
+	}
+
+	public void load()
+	{
 		DefaultLimit = BankLimit.valueOf(config.getString("bank.default-limit").toUpperCase());
 		ConsoleLog = config.getBoolean("console-log");
-
+		PriceProtection = config.getBoolean("price-protection.enabled");
+		PriceAdmins = config.getStringList("price-protection.allowed");
 	}
 
 	public void save()

@@ -94,18 +94,6 @@ public class CommandBanking extends ShoppingCommand
 			// give gold
 			ShoppingUtils.giveGold(player, amount);
 
-			//			HashMap<Integer, ItemStack> overflowGold = ShoppingUtils.addGoldToInventory(player, amount);
-			//			if (!overflowGold.isEmpty())
-			//			{
-			//				int overflow = 0;
-			//				for (ItemStack itemStack : overflowGold.values())
-			//					overflow += ShoppingUtils.value(itemStack);
-			//				amount -= overflow;
-			//				if (amount <= 0)
-			//					throw new IllegalArgumentException("There is no room in your inventory!");
-			//				Utils.message(sender, "&7The amount was reduced to &8" + amount + "GN&7, as there isn't room in your inventory for more!");
-			//			}
-
 			// take from bank
 			account.withdraw(amount);
 

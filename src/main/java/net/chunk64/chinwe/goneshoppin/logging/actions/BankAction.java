@@ -21,9 +21,9 @@ public class BankAction extends LoggerAction
 	public String getMessage()
 	{
 		if (action == Action.STEAL)
-			return String.format("%s stole %d from %s, who now has a balance of %s", playerName, amount, account.getName(), account.getBalance() + "GN");
+			return String.format("%s stole %dGN from %s, who now has a balance of %sGN", playerName, amount, account.getName(), account.getBalance() + "GN");
 		else
-			return String.format("%s %s %d, and now has a balance of %s", playerName, action == Action.WITHDRAW ? "withdrew" : "deposited", amount, account.getBalance());
+			return String.format("%s %s %dGN, and now has a balance of %sGN", playerName, action == Action.WITHDRAW ? "withdrew" : "deposited", amount, account.getBalance());
 
 	}
 }

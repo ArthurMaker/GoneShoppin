@@ -8,12 +8,14 @@ import net.chunk64.chinwe.goneshoppin.items.GSItem;
 import net.chunk64.chinwe.goneshoppin.logging.Action;
 import net.chunk64.chinwe.goneshoppin.logging.GSLogger;
 import net.chunk64.chinwe.goneshoppin.logging.actions.AdminPriceAction;
+import net.chunk64.chinwe.goneshoppin.util.Config;
 import net.chunk64.chinwe.goneshoppin.util.ShoppingUtils;
 import net.chunk64.chinwe.goneshoppin.util.Utils;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.Iterator;
@@ -36,6 +38,11 @@ public class CommandSetPrice extends ShoppingCommand
 		// usage
 		if ((!note && args.length != 5) || (note && args.length < 1))
 			throw new IncorrectUsageException();
+
+		// permission check
+		if (!note && Config.PriceProtection && sender instanceof Player)
+			if (!Config.PriceAdmins.contains(sender.getName()))
+				throw new IllegalArgumentException("There are only " + Config.PriceAdmins.size() + " player" + (Config.PriceAdmins.size() == 1 ? "" : "s") + " who can change prices - and you ain't one of them!");
 
 		// get material
 		ItemStack itemStack = ShoppingUtils.parseInputAndMessage(sender, args[0]);

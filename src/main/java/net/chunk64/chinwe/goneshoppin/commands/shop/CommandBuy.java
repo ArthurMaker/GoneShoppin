@@ -75,7 +75,11 @@ public class CommandBuy extends ShoppingCommand
 		else if (itemStack.getAmount() == -2)
 			itemStack.setAmount(gsItem.getPerTransaction(true));
 
+
 		// check amount
+		if (itemStack.getAmount() == 0)
+			throw new IllegalArgumentException("You can't buy any of that!");
+
 		checkMultiples(gsItem, itemStack, true);
 
 		// update price

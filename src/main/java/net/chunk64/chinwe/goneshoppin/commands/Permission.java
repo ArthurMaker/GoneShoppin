@@ -15,10 +15,16 @@ public enum Permission
 	COUNT("count in your inventory", true), COUNT_OTHER("count in others' inventories", false),
 	PRICE("price items", true), ID(null, true),
 	SELL("sell items", true), BUY("buy items", true),
+
 	SET_BALANCE("set players' balances", false), SET_BALANCE_OVERLIMIT("set players' balances over their limits", false),
 	SET_LIMIT("set players' limits", false),
 	CASH("cash your gold to nuggets", true), SIMPLIFY("simplify your gold", true), SET_PRICE("set prices", false), SET_NOTE("set notes", false),
-	ALERT("receive transaction alerts", false);
+
+	ALERT("receive transaction alerts", false), MONITOR("toggle alert receiving", false),
+
+	// help menus
+	HELP_GONESHOPPIN("view the help menu", true), HELP_BANK("view banking help", true),
+	HELP_SHOP("view shopping help", true), HELP_ADMIN("view admin help", false), HELP_MISC("view miscellaneous help", true);
 
 	private static final String PLUGIN_NAME = "goneshoppin";
 	private String message;

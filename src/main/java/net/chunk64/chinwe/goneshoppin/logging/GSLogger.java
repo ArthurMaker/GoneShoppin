@@ -3,8 +3,9 @@ package net.chunk64.chinwe.goneshoppin.logging;
 import net.chunk64.chinwe.goneshoppin.GoneShoppin;
 import net.chunk64.chinwe.goneshoppin.commands.Permission;
 import net.chunk64.chinwe.goneshoppin.util.Config;
-import net.chunk64.chinwe.goneshoppin.util.Utils;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
@@ -14,8 +15,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.List;
 
 public class GSLogger
 {
@@ -24,8 +24,7 @@ public class GSLogger
 	private static File file;
 	private static SimpleDateFormat simpleDateFormat = new SimpleDateFormat();
 
-	private BufferedWriter writer;
-	private Set<String> grumpyAdmins = new HashSet<String>();
+	public List<String> grumpyAdmins;
 
 	public GSLogger(Plugin plugin)
 	{
@@ -39,16 +38,16 @@ public class GSLogger
 			{
 				log = "Could not find transaction log file! Creating...";
 				file.createNewFile();
-			}
-			else
+			} else
 				log = "Log file found, loading...";
 
 			GoneShoppin.getInstance().getLogger().info(log);
-			writer = new BufferedWriter(new FileWriter(file, true));
 		} catch (IOException e)
 		{
 			e.printStackTrace();
 		}
+
+		loadData();
 
 	}
 
@@ -57,13 +56,23 @@ public class GSLogger
 		return instance;
 	}
 
+	private void loadData()
+	{
+		grumpyAdmins = GoneShoppin.getInstance().getData().getYml().getStringList("grumpy-transactions-monitors");
+	}
+
 	public void log(String string)
 	{
+
 		// save to log file
 		try
 		{
+			// decided to save file after each log
+			BufferedWriter writer = new BufferedWriter(new FileWriter(file, true));
+
 			writer.write(getTime() + " : " + string);
 			writer.newLine();
+			writer.close();
 		} catch (IOException e)
 		{
 			e.printStackTrace();
@@ -71,26 +80,19 @@ public class GSLogger
 
 		// message admins
 		for (Player player : Bukkit.getOnlinePlayers())
-			if (Permission.ALERT.senderHas(player) && !grumpyAdmins.contains(player.getName()))
-				Utils.message(player, "&7" + string);
+			if (player.hasPermission(Permission.ALERT.getPermission()) && !grumpyAdmins.contains(player.getName()))
+				message(player, string);
 
 		// log to console
 		if (Config.ConsoleLog)
-			Utils.message(Bukkit.getConsoleSender(), string);
+			message(Bukkit.getConsoleSender(), string);
 	}
 
 	public static void unload()
 	{
 		file = null;
-		try
-		{
-			getInstance().writer.close();
-		} catch (IOException e)
-		{
-			e.printStackTrace();
-		}
-		getInstance().writer = null;
 		instance = null;
+		simpleDateFormat = null;
 	}
 
 
@@ -102,5 +104,10 @@ public class GSLogger
 	private static String getTime()
 	{
 		return simpleDateFormat.format(new Date());
+	}
+
+	private static void message(CommandSender sender, String message)
+	{
+		sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&8: &7&o" + message));
 	}
 }
