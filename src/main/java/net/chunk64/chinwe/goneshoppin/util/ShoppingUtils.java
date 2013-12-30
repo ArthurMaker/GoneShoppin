@@ -1,6 +1,6 @@
 package net.chunk64.chinwe.goneshoppin.util;
 
-import net.chunk64.chinwe.goneshoppin.Gold;
+import net.chunk64.chinwe.goneshoppin.items.Gold;
 import net.chunk64.chinwe.goneshoppin.GoneShoppin;
 import net.chunk64.chinwe.goneshoppin.items.Alias;
 import net.chunk64.chinwe.goneshoppin.items.GSItem;
@@ -62,6 +62,8 @@ public class ShoppingUtils
 		if (isGold(itemStack))
 			return 0;
 		GSItem gsItem = GSItem.loadItem(itemStack);
+		if (gsItem == null)
+			return 0;
 		Double price = gsItem.getRawPrice(false, itemStack.getAmount());
 		return price == null ? 0 : price;
 	}

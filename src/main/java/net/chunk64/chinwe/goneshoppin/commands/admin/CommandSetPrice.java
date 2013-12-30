@@ -98,7 +98,6 @@ public class CommandSetPrice extends ShoppingCommand
 			GSItem item = iterator.next();
 			if (item.getAlias() == alias)
 			{
-				System.out.println("found and removed");
 				iterator.remove();
 				break;
 			}

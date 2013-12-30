@@ -1,6 +1,6 @@
 package net.chunk64.chinwe.goneshoppin.banking;
 
-import net.chunk64.chinwe.goneshoppin.GoneShoppin;
+import net.chunk64.chinwe.goneshoppin.util.Config;
 import org.bukkit.configuration.Configuration;
 
 import java.math.BigDecimal;
@@ -13,7 +13,7 @@ public enum BankLimit
 
 	public static void loadLimits()
 	{
-		Configuration config = GoneShoppin.getInstance().getConfigFile().getConfiguration();
+		Configuration config = Config.getInstance().getConfiguration();
 		for (BankLimit limit : values())
 		{
 			if (limit == UNLIMITED)

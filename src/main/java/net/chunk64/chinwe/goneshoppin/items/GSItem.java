@@ -60,6 +60,11 @@ public class GSItem
 	 */
 	public static void load(Material material, boolean check) throws NullPointerException
 	{
+		// screw maps
+		if (material == Material.MAP)
+			return;
+
+
 		// check if already loaded
 		if (check)
 		{

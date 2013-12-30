@@ -1,7 +1,9 @@
 package net.chunk64.chinwe.goneshoppin.commands;
 
 import net.chunk64.chinwe.goneshoppin.items.GSItem;
+import net.chunk64.chinwe.goneshoppin.logging.GSLogger;
 import net.chunk64.chinwe.goneshoppin.util.Utils;
+import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -20,9 +22,6 @@ public abstract class ShoppingCommand implements CommandExecutor
 		this.playerOnly = playerOnly;
 		this.perm = perm;
 		this.command = command;
-		//		this.commands = new ArrayList<String>();
-		//		for (String s : commands)
-		//			this.commands.add(s);
 	}
 
 	@Override
@@ -58,7 +57,14 @@ public abstract class ShoppingCommand implements CommandExecutor
 			// Utils.message(sender, "&cUsage: /" + cmd.getUsage() + (e.getMessage() != null ? " " + Utils.stripColour(e.getMessage()) : ""));
 		} catch (Exception e)
 		{
-			Utils.message(sender, "&cError: " + (e.getMessage() == null ? e : Utils.stripColour(e.getMessage())));
+			String message = e.getMessage() == null ? e.toString() : Utils.stripColour(e.getMessage());
+			Utils.message(sender, "&cError: " + message);
+
+			// admins
+			for (Player player : Bukkit.getOnlinePlayers())
+				if (player.hasPermission(Permission.ALERT.getPermission()))
+					GSLogger.message(player, "Error when " + sender.getName() + " ran '/" + label + StringUtils.join(args, ' ') + "': " + message);
+
 			e.printStackTrace();
 		}
 		return true;

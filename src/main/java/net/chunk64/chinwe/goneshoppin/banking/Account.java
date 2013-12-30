@@ -7,18 +7,25 @@ import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Account implements ConfigurationSerializable
+public class Account implements ConfigurationSerializable, Comparable<Account>
 {
 	private BigDecimal balance;
 	private BankLimit limit;
 	private String player;
+	private boolean temporary;
 
 	public Account(String player)
 	{
-		this.player = player;
+		this.player = player.toLowerCase();
 		this.balance = BigDecimal.ZERO;
 		this.limit = Config.DefaultLimit;
 		Bank.getInstance().addAccount(this);
+	}
+
+	public Account(String player, boolean temporary)
+	{
+		this(player);
+		this.temporary = temporary;
 	}
 
 
@@ -84,5 +91,15 @@ public class Account implements ConfigurationSerializable
 	{
 		return getBalance().doubleValue() >= amount;
 
+	}
+
+	public boolean isTemporary()
+	{
+		return temporary;
+	}
+
+	public int compareTo(Account o)
+	{
+		return balance.compareTo(o.balance);
 	}
 }

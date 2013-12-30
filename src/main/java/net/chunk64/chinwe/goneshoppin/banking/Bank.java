@@ -6,9 +6,8 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.math.BigDecimal;
+import java.util.*;
 
 public class Bank
 {
@@ -42,6 +41,7 @@ public class Bank
 			count++;
 		}
 
+		// lowercase
 		instance.plugin.getLogger().info("Loaded " + count + " accounts to " + instance.bankFile.getFile().getName());
 
 	}
@@ -52,11 +52,18 @@ public class Bank
 	public static void saveAllAccounts()
 	{
 		FileConfiguration yml = instance.bankFile.getYml();
+		List<Account> sortedAccounts = new ArrayList<Account>(instance.getAccounts());
+		Collections.sort(sortedAccounts);
 		int count = 0;
-		for (Account account : instance.getAccounts())
+		for (Account account : sortedAccounts)
 		{
-			yml.set("accounts." + account.getName(), account);
-			count++;
+			// checks
+			if (!account.isTemporary() || !account.getBalance().equals(BigDecimal.ZERO))
+			{
+				yml.set("accounts." + account.getName(), account);
+				count++;
+			}
+
 		}
 		instance.bankFile.save();
 		instance.plugin.getLogger().info("Saved " + count + " accounts to " + instance.bankFile.getFile().getName());
@@ -83,10 +90,21 @@ public class Bank
 	 */
 	public Account getAccount(String player)
 	{
-		Account account = accounts.get(player);
+		player = player.toLowerCase();
+		Account account = findAccount(player);
 		if (account == null)
-			account = new Account(player);
+			account = new Account(player, true);
 		return account;
+	}
+
+	private Account findAccount(String name)
+	{
+		for (Account account : accounts.values())
+			if (account.getName().equalsIgnoreCase(name) || account.getName().startsWith(name))
+				return account;
+
+		return accounts.get(name);
+
 	}
 
 	/**
@@ -97,8 +115,6 @@ public class Bank
 		Player targetPlayer = Bukkit.getPlayer(player);
 		String target = targetPlayer == null ? player : targetPlayer.getName();
 
-		if (!Bank.getInstance().hasAccount(target))
-			return null;
 		return getAccount(target);
 	}
 

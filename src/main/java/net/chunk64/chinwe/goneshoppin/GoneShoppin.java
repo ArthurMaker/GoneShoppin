@@ -5,8 +5,9 @@ import net.chunk64.chinwe.goneshoppin.banking.Bank;
 import net.chunk64.chinwe.goneshoppin.banking.BankLimit;
 import net.chunk64.chinwe.goneshoppin.commands.Permission;
 import net.chunk64.chinwe.goneshoppin.commands.ShoppingCommand;
-import net.chunk64.chinwe.goneshoppin.commands.admin.CommandAdmin;
+import net.chunk64.chinwe.goneshoppin.commands.admin.CommandBankAdmin;
 import net.chunk64.chinwe.goneshoppin.commands.admin.CommandMonitor;
+import net.chunk64.chinwe.goneshoppin.commands.admin.CommandReload;
 import net.chunk64.chinwe.goneshoppin.commands.admin.CommandSetPrice;
 import net.chunk64.chinwe.goneshoppin.commands.bank.CommandBalance;
 import net.chunk64.chinwe.goneshoppin.commands.bank.CommandBanking;
@@ -33,7 +34,6 @@ public class GoneShoppin extends JavaPlugin
 	private static GoneShoppin instance;
 
 	private FileManager data;
-	private Config config;
 
 
 	@Override
@@ -51,17 +51,16 @@ public class GoneShoppin extends JavaPlugin
 	@Override
 	public void onDisable()
 	{
-		Bank.saveAllAccounts();
+		GSSave.save();
 		GSItem.unload();
 		instance = null;
-		config = null;
 		GSLogger.unload();
 		data.destroy(true);
 	}
 
 	private void init()
 	{
-		this.config = new Config(this);
+		new Config(this);
 		BankLimit.loadLimits();
 
 		new Bank(this);
@@ -70,6 +69,9 @@ public class GoneShoppin extends JavaPlugin
 		GSItem.loadFile(this);
 
 		new GSLogger(this);
+
+		if (Config.SaveMinutes > 0)
+			new GSSave(this);
 	}
 
 	private void registerCommands()
@@ -84,13 +86,16 @@ public class GoneShoppin extends JavaPlugin
 		register("sell", CommandPrice.class, true, Permission.SELL);
 		register("buy", CommandBuy.class, true, Permission.BUY);
 		register("id", CommandId.class, true, Permission.ID);
-		register("setbalance", CommandAdmin.class, false, Permission.SET_BALANCE);
-		register("setlimit", CommandAdmin.class, false, Permission.SET_LIMIT);
+		register("setbalance", CommandBankAdmin.class, false, Permission.SET_BALANCE);
+		register("setlimit", CommandBankAdmin.class, false, Permission.SET_LIMIT);
 		register("cash", CommandChange.class, true, Permission.CASH);
 		register("simplify", CommandChange.class, true, Permission.SIMPLIFY);
 		register("setprice", CommandSetPrice.class, false, Permission.SET_PRICE);
 		register("setnote", CommandSetPrice.class, false, Permission.SET_NOTE);
 		register("monitor", CommandMonitor.class, true, Permission.MONITOR);
+		register("gssave", CommandReload.class, false, Permission.SAVE);
+		register("gsreload", CommandReload.class, false, Permission.RELOAD);
+
 	}
 
 	private void register(String command, Class clazz, boolean playerOnly, Permission perm)
@@ -130,7 +135,8 @@ public class GoneShoppin extends JavaPlugin
 				"material's &3id&7, &3name&7 or &3\"hand\"&7, optionally followed by " +
 				"a &3damage value&7: i.e &81  hand  wood:3  birchwood  17:1  hand:2");
 
-		bank.addTopics(new CommandTopic("withdraw"), new CommandTopic("deposit"), new CommandTopic("balance"), new CommandTopic("steal"), new CommandTopic("setbalance"), new CommandTopic("setlimit"));
+		// TODO add permissions for all
+		bank.addTopics(new CommandTopic("withdraw"), new CommandTopic("deposit"), new CommandTopic("balance"), new CommandTopic("steal", Permission.BANK_STEAL.getPermission()), new CommandTopic("setbalance", Permission.SET_BALANCE.getPermission()), new CommandTopic("setlimit", Permission.SET_LIMIT.getPermission()));
 		shop.addTopics(new CommandTopic("buy"), new CommandTopic("sell"), new CommandTopic("price"), new CommandTopic("value"), material);
 		misc.addTopics(new CommandTopic("count"), new CommandTopic("id"), new CommandTopic("cash"), new CommandTopic("simplify"), material);
 		admin.addTopics(new CommandTopic("setprice"), new CommandTopic("setnote"), new CommandTopic("monitor"));
@@ -141,11 +147,6 @@ public class GoneShoppin extends JavaPlugin
 		return instance;
 	}
 
-
-	public Config getConfigFile()
-	{
-		return config;
-	}
 
 	public FileManager getData()
 	{

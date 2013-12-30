@@ -45,8 +45,8 @@ public class CommandBuy extends ShoppingCommand
 		{
 			boolean max = args[1].equalsIgnoreCase("max");
 			amount = max ? -1 : Utils.getInt(args[1]);
-//			if (amount == null)
-//				throw new IllegalArgumentException("Invalid amount given!");
+			if (amount == null)
+				throw new IllegalArgumentException("Invalid amount given!");
 			if (!max && amount < 1)
 				throw new IllegalArgumentException("You cannot buy an amount less than 1!");
 		} else

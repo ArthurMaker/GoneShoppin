@@ -18,6 +18,7 @@ public class CommandTopic implements Topic
 		this.description = description;
 		HelpManager.getInstance().allTopics.add(this);
 	}
+
 	public CommandTopic(String pluginCommand)
 	{
 		PluginCommand cmd = HelpManager.instance.plugin.getCommand(pluginCommand);
@@ -26,6 +27,12 @@ public class CommandTopic implements Topic
 		this.command = cmd.getUsage();
 		this.description = cmd.getDescription();
 		HelpManager.getInstance().allTopics.add(this);
+	}
+
+	public CommandTopic(String pluginCommand, Permission permission)
+	{
+		this(pluginCommand);
+		this.permission = permission;
 	}
 
 	public CommandTopic(String command, String description, Permission permission)

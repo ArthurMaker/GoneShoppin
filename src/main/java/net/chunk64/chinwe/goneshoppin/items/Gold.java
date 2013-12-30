@@ -1,4 +1,4 @@
-package net.chunk64.chinwe.goneshoppin;
+package net.chunk64.chinwe.goneshoppin.items;
 
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;

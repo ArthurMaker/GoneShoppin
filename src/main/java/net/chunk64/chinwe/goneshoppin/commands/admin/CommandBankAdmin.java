@@ -15,10 +15,10 @@ import org.bukkit.command.CommandSender;
 
 import java.util.Arrays;
 
-public class CommandAdmin extends ShoppingCommand
+public class CommandBankAdmin extends ShoppingCommand
 {
 
-	public CommandAdmin(Permission perm, boolean playerOnly, String command)
+	public CommandBankAdmin(Permission perm, boolean playerOnly, String command)
 	{
 		super(perm, playerOnly, command);
 	}
@@ -60,6 +60,8 @@ public class CommandAdmin extends ShoppingCommand
 			value = limit.toAmount();
 		}
 		Utils.message(sender, String.format("You set &b%s&f's %s to &6%s&f!", account.getName(), balance ? "balance" : "bank limit", value));
+//		if (account.isTemporary())
+//			Utils.message(sender, "&7This account is newly created, they didn't have one before.");
 
 		GSLogger.log(new AdminBankAction(sender.getName(), balance ? Action.SET_BALANCE : Action.SET_LIMIT, account));
 	}

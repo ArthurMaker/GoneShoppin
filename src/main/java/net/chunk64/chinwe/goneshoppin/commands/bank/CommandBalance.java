@@ -40,6 +40,8 @@ public class CommandBalance extends ShoppingCommand
 			return;
 
 		String limit = account.getLimit() == BankLimit.UNLIMITED ? "It has &bno limit" : "It is &blimited &rto &6" + account.getLimit().toAmount();
-		Utils.message(player, String.format("%s account holds &6%dGN&f! %s&r.", self ? "Your" : "That", account.getBalance().intValue(), limit));
+		Utils.message(player, String.format("%s account holds &6%dGN&f! %s&r.", self ? "Your" : "&b" + account.getName() + "'s&r", account.getBalance().intValue(), limit));
+//		if (!self && account.isTemporary())
+//			Utils.message(player, "&7This account is newly created.");
 	}
 }

@@ -24,7 +24,8 @@ public enum Permission
 
 	// help menus
 	HELP_GONESHOPPIN("view the help menu", true), HELP_BANK("view banking help", true),
-	HELP_SHOP("view shopping help", true), HELP_ADMIN("view admin help", false), HELP_MISC("view miscellaneous help", true);
+	HELP_SHOP("view shopping help", true), HELP_ADMIN("view admin help", false), HELP_MISC("view miscellaneous help", true),
+	SAVE("force a save", false), RELOAD("reload the config", false);
 
 	private static final String PLUGIN_NAME = "goneshoppin";
 	private String message;

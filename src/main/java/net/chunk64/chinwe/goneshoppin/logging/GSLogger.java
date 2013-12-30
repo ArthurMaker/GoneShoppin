@@ -14,6 +14,8 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -25,10 +27,12 @@ public class GSLogger
 	private static SimpleDateFormat simpleDateFormat = new SimpleDateFormat();
 
 	public List<String> grumpyAdmins;
+	private List<String> queue;
 
 	public GSLogger(Plugin plugin)
 	{
 		instance = this;
+		queue = new ArrayList<String>();
 		try
 		{
 			file = new File(plugin.getDataFolder(), "log.txt");
@@ -51,10 +55,11 @@ public class GSLogger
 
 	}
 
-	public static GSLogger getInstance()
+	public File getFile()
 	{
-		return instance;
+		return file;
 	}
+
 
 	private void loadData()
 	{
@@ -64,24 +69,31 @@ public class GSLogger
 	public void log(String string)
 	{
 
-		// save to log file
-		try
-		{
-			// decided to save file after each log
-			BufferedWriter writer = new BufferedWriter(new FileWriter(file, true));
+		String log = getTime() + " : " + string;
 
-			writer.write(getTime() + " : " + string);
-			writer.newLine();
-			writer.close();
-		} catch (IOException e)
+		// add to queue only if regular saves are on
+		if (Config.SaveMinutes > 0)
+			queue.add(log);
+		else
 		{
-			e.printStackTrace();
+			// save to log file directly
+			try
+			{
+				BufferedWriter writer = new BufferedWriter(new FileWriter(file, true));
+
+				writer.write(log);
+				writer.newLine();
+				writer.close();
+			} catch (IOException e)
+			{
+				e.printStackTrace();
+			}
+
 		}
 
+
 		// message admins
-		for (Player player : Bukkit.getOnlinePlayers())
-			if (player.hasPermission(Permission.ALERT.getPermission()) && !grumpyAdmins.contains(player.getName()))
-				message(player, string);
+		alert(log, true);
 
 		// log to console
 		if (Config.ConsoleLog)
@@ -95,7 +107,6 @@ public class GSLogger
 		simpleDateFormat = null;
 	}
 
-
 	public static void log(LoggerAction action)
 	{
 		getInstance().log(action.getMessage());
@@ -106,8 +117,28 @@ public class GSLogger
 		return simpleDateFormat.format(new Date());
 	}
 
-	private static void message(CommandSender sender, String message)
+	public static void message(CommandSender sender, String message)
 	{
-		sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&8: &7&o" + message));
+		sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&8:GS: &7&o" + message));
+	}
+
+	public static GSLogger getInstance()
+	{
+		return instance;
+	}
+
+	public List<String> getQueue()
+	{
+		return queue;
+	}
+
+	public void alert(String s, boolean avoidGrumpy, String... except)
+	{
+		List<String> exceptNames = Arrays.asList(except);
+		for (Player player : Bukkit.getOnlinePlayers())
+			if (!exceptNames.contains(player.getName()))
+				if (player.hasPermission(Permission.ALERT.getPermission()))
+					if (!avoidGrumpy || !grumpyAdmins.contains(player.getName()))
+						message(player, s);
 	}
 }
