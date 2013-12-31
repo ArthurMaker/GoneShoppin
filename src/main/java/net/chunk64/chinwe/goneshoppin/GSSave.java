@@ -31,7 +31,7 @@ public class GSSave extends BukkitRunnable
 			updateSaveTime();
 
 		// run
-		runTaskTimer(plugin, 0L, 600); // every 30 seconds
+		runTaskTimer(plugin, 100L, 600); // every 30 seconds
 	}
 
 

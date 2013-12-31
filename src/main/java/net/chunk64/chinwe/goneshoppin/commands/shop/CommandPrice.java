@@ -93,6 +93,9 @@ public class CommandPrice extends ShoppingCommand
 
 		int finalSellPrice = sellPrice.intValue();
 
+		// another validation
+		validatePrice(finalSellPrice, name);
+
 		// damaged tool
 		if (Utils.isDamagedTool(itemStack))
 			throw new IllegalArgumentException("You must repair that " + name + " before selling it!");

@@ -47,6 +47,8 @@ public class Utils
 	 */
 	public static Integer getInt(String s)
 	{
+		if (s == null)
+			return null;
 		try
 		{
 			return Integer.parseInt(s);
@@ -55,11 +57,14 @@ public class Utils
 			return null;
 		}
 	}
+
 	/**
 	 * Attempts to convert a string to an double -> returns null otherwise
 	 */
 	public static Double getDouble(String s)
 	{
+		if (s == null)
+			return null;
 		try
 		{
 			return Double.parseDouble(s);

@@ -16,7 +16,7 @@ public class Account implements ConfigurationSerializable, Comparable<Account>
 
 	public Account(String player)
 	{
-		this.player = player.toLowerCase();
+		this.player = player;
 		this.balance = BigDecimal.ZERO;
 		this.limit = Config.DefaultLimit;
 		Bank.getInstance().addAccount(this);
@@ -100,6 +100,20 @@ public class Account implements ConfigurationSerializable, Comparable<Account>
 
 	public int compareTo(Account o)
 	{
-		return balance.compareTo(o.balance);
+		int i = balance.compareTo(o.balance);
+		if (i == -1)
+			return 1;
+		if (i == 1)
+			return -1;
+		return i;
+
+		//		if (balance.equals(o.balance))
+		//			return 0;
+		//
+		//		int value = balance.intValue();
+		//		int oValue = o.balance.intValue();
+		//
+		//		return value > oValue ? 1 : -1;
+
 	}
 }

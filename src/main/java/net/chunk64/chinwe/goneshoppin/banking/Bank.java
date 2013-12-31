@@ -55,12 +55,16 @@ public class Bank
 		List<Account> sortedAccounts = new ArrayList<Account>(instance.getAccounts());
 		Collections.sort(sortedAccounts);
 		int count = 0;
+
+		// clear accounts
+		yml.set("accounts", null);
+
 		for (Account account : sortedAccounts)
 		{
 			// checks
 			if (!account.isTemporary() || !account.getBalance().equals(BigDecimal.ZERO))
 			{
-				yml.set("accounts." + account.getName(), account);
+				yml.set("accounts." + account.getName().toLowerCase(), account);
 				count++;
 			}
 
@@ -90,8 +94,7 @@ public class Bank
 	 */
 	public Account getAccount(String player)
 	{
-		player = player.toLowerCase();
-		Account account = findAccount(player);
+		Account account = findAccount(player.toLowerCase());
 		if (account == null)
 			account = new Account(player, true);
 		return account;

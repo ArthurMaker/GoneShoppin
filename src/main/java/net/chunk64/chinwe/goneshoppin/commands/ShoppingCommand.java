@@ -59,12 +59,7 @@ public abstract class ShoppingCommand implements CommandExecutor
 		{
 			String message = e.getMessage() == null ? e.toString() : Utils.stripColour(e.getMessage());
 			Utils.message(sender, "&cError: " + message);
-
-			// admins
-			for (Player player : Bukkit.getOnlinePlayers())
-				if (player.hasPermission(Permission.ALERT.getPermission()))
-					GSLogger.message(player, "Error when " + sender.getName() + " ran '/" + label + StringUtils.join(args, ' ') + "': " + message);
-
+			GSLogger.getInstance().alert("Error when " + sender.getName() + " ran '/" + label + " " + StringUtils.join(args, ' ') + "': " + message, false, sender.getName());
 			e.printStackTrace();
 		}
 		return true;
@@ -93,6 +88,15 @@ public abstract class ShoppingCommand implements CommandExecutor
 		}
 	}
 
+	protected void validatePrice(double finalPrice, String itemName)
+	{
+		if (finalPrice == 0)
+		{
+			GSLogger.getInstance().alert("The price for " + itemName + " must be changed! Avoid multiples of 0.3.", false);
+			throw new IllegalArgumentException("The price for this item is invalid! Online admins have been alerted.");
+		}
+	}
+
 	public static Player getPlayer(CommandSender sender, String name)
 	{
 		Player player = Bukkit.getPlayer(name);
@@ -100,6 +104,5 @@ public abstract class ShoppingCommand implements CommandExecutor
 			Utils.message(sender, "&c'" + name + "' is not online!");
 		return player;
 	}
-
 
 }

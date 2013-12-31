@@ -44,7 +44,11 @@ public class CommandBuy extends ShoppingCommand
 		if (args.length == 2)
 		{
 			boolean max = args[1].equalsIgnoreCase("max");
-			amount = max ? -1 : Utils.getInt(args[1]);
+			if (max)
+				amount = -1;
+			else
+				amount = Utils.getInt(args[1]);
+
 			if (amount == null)
 				throw new IllegalArgumentException("Invalid amount given!");
 			if (!max && amount < 1)
@@ -75,7 +79,6 @@ public class CommandBuy extends ShoppingCommand
 		else if (itemStack.getAmount() == -2)
 			itemStack.setAmount(gsItem.getPerTransaction(true));
 
-
 		// check amount
 		if (itemStack.getAmount() == 0)
 			throw new IllegalArgumentException("You can't buy any of that!");
@@ -86,6 +89,9 @@ public class CommandBuy extends ShoppingCommand
 		buyPrice *= itemStack.getAmount();
 
 		int finalBuyPrice = buyPrice.intValue();
+
+		// yet another validate
+		validatePrice(finalBuyPrice, name);
 
 		// check money in inv
 		int invValue = ShoppingUtils.valueInventory(player);

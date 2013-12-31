@@ -3,6 +3,7 @@ package net.chunk64.chinwe.goneshoppin.logging;
 import net.chunk64.chinwe.goneshoppin.GoneShoppin;
 import net.chunk64.chinwe.goneshoppin.commands.Permission;
 import net.chunk64.chinwe.goneshoppin.util.Config;
+import net.chunk64.chinwe.goneshoppin.util.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -90,10 +91,8 @@ public class GSLogger
 			}
 
 		}
-
-
 		// message admins
-		alert(log, true);
+		alert(string, true);
 
 		// log to console
 		if (Config.ConsoleLog)
@@ -119,7 +118,7 @@ public class GSLogger
 
 	public static void message(CommandSender sender, String message)
 	{
-		sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&8:GS: &7&o" + message));
+		sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&8:GS: &7&o" + Utils.stripColour(message)));
 	}
 
 	public static GSLogger getInstance()
