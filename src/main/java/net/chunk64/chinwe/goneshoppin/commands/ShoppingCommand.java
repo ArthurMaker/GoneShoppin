@@ -84,7 +84,7 @@ public abstract class ShoppingCommand implements CommandExecutor
 			if (itemStack.getAmount() > minAmount)
 				itemStack.setAmount((itemStack.getAmount() / minAmount) * minAmount);
 			else
-				throw new IllegalArgumentException("You can only sell that item in multiples of " + minAmount + "!");
+				throw new IllegalArgumentException("You can only " + (buying ? "buy" : "sell") + " that item in multiples of " + minAmount + "!");
 		}
 	}
 
