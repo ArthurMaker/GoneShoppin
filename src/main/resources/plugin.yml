@@ -3,11 +3,11 @@ version: '${project.version}'
 main: net.chunk64.chinwe.goneshoppin.GoneShoppin
 commands:
   withdraw:
-    usage: /withdraw <amount>
+    usage: /withdraw <amount|all>
     description: Withdraw from your bank account
     aliases: [wd]
   deposit:
-    usage: /deposit <amount>
+    usage: /deposit <amount|all>
     description: Deposit into your bank account
     aliases: [dp]
   balance:
@@ -15,7 +15,7 @@ commands:
     description: View your, or someone else's bank balance
     aliases: [bal]
   steal:
-    usage: /steal <amount> <player>
+    usage: /steal <amount|all> <player>
     description: Steal from someone's bank account
     aliases: [stl]
   value:
@@ -30,14 +30,14 @@ commands:
     usage: /id [material]
     description: Get the ID of the item in your hand
   price:
-    usage: /price [material] [amount]
+    usage: /price [material] [amount|all]
     description: Price the item in your hand, or the given material
   sell:
-    usage: /sell [amount]
-    description: Sell the item in your hand, with a default amount of 1
+    usage: /sell [amount|all]
+    description: Sell the item in your hand, with a default amount of the minimum sell amount
   buy:
-    usage: /buy <material> [amount]
-    description: Buy some of the given item, with a default amount of 1
+    usage: /buy <material> [amount|max]
+    description: Buy some of the given item, with a default amount of the minimum buy amount
   setbalance:
     usage: /setbalance <player> <new balance>
     description: Set a player's bank balance
@@ -54,5 +54,19 @@ commands:
     usage: /simplify
     description: Simplify all the gold in your inventory to gold blocks, ingots and nuggets
     aliases: [simplifygold]
-
+  setprice:
+    usage: /setprice <material> <single buy price> <buy minimum> <single sell price> <sell minimum>
+    description: Set the price of an item
+  setnote:
+    usage: /setnote <material> [note]
+    description: Set the note of an item, or leave blank to clear
+  monitor:
+    usage: /monitor
+    description: Toggle receiving alerts of all transactions
+  gsreload:
+    usage: /gsreload
+    description: Reload the config
+  gssave:
+    usage: /gssave
+    description: Force a save of all data
 

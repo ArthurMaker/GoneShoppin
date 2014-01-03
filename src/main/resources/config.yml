@@ -2,8 +2,25 @@
 
 bank:
   limits:
-    first: 1000
-    second: 5000
-    third: 10000
+    first: 5000
+    second: 10000
+    third: 20000
 
+  # The bank limit that everyone will have when their account is created
+  # 'unlimited' is also an option
   default-limit: first
+
+# Whether all transactions should be logged to the console
+console-log: true
+
+# Only the listed players are allowed to change prices using /setprice
+# Set 'enabled' to false to allow anyone with permission to
+price-protection:
+  enabled: true
+  allowed:
+    - Chinwe
+    - AdminNumber2
+
+# How often to save the bank/log in minutes
+# Set to 0 to disable
+minute-interval-between-saves: 15
