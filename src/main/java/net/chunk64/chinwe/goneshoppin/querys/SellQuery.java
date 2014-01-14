@@ -70,10 +70,12 @@ public class SellQuery extends BaseQuery
 
 		// pay
 		if (sender == player)
+		{
 			if (ShoppingUtils.giveGold(player, finalSellPrice))
 				Utils.message(sender, "&7Dropping excess money onto the floor!");
 			else
 				sellerAccount.deposit(finalSellPrice);
+		}
 
 		GSLogger.log(new TransactionAction(player.getName(), Action.SELL, itemStack, amount, finalSellPrice));
 
