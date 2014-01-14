@@ -17,9 +17,10 @@ import org.bukkit.entity.Player;
 public class CommandBanking extends ShoppingCommand
 {
 
-	public CommandBanking(Permission perm, boolean playerOnly, String command)
+	public CommandBanking()
 	{
-		super(perm, playerOnly, command);
+		setPermission(null);
+		setPlayerOnly(true);
 	}
 
 	private enum CommandType
@@ -34,6 +35,10 @@ public class CommandBanking extends ShoppingCommand
 		Account account = Bank.getInstance().getAccount(player.getName());
 
 		CommandType ct = CommandType.valueOf(cmd.getName().toUpperCase());
+		Permission p = Permission.valueOf("BANK_" + ct.toString());
+
+		if (!hasPermission(sender, p))
+			return;
 
 		// usage
 		if ((ct == CommandType.STEAL && args.length != 2) || ct != CommandType.STEAL && args.length != 1)

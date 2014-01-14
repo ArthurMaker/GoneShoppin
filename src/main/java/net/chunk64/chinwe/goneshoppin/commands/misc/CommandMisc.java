@@ -14,9 +14,10 @@ import org.bukkit.inventory.ItemStack;
 public class CommandMisc extends ShoppingCommand
 {
 
-	public CommandMisc(Permission perm, boolean playerOnly, String command)
+	public CommandMisc()
 	{
-		super(perm, playerOnly, command);
+		setPermission(null);
+		setPlayerOnly(true);
 	}
 
 	@Override
@@ -29,6 +30,10 @@ public class CommandMisc extends ShoppingCommand
 		if (args.length > 1)
 			throw new IncorrectUsageException();
 
+		// individual command permissions
+		if (value && !hasPermission(sender, Permission.VALUE) || !value && !hasPermission(sender, Permission.COUNT))
+			return;
+
 		// get target
 		Player target = args.length == 0 ? player : getPlayer(sender, args[0]);
 		if (target == null)
@@ -36,12 +41,10 @@ public class CommandMisc extends ShoppingCommand
 
 		boolean self = target == player;
 
-		// permission check
+		// self permission check
 		if (!self)
 		{
-			if (value && !Permission.VALUE_OTHER.senderHas(sender))
-				return;
-			if (!value && !Permission.COUNT_OTHER.senderHas(sender))
+			if (value && !hasPermission(sender, Permission.VALUE_OTHER) || !value && !hasPermission(sender, Permission.COUNT_OTHER))
 				return;
 		}
 
@@ -66,7 +69,7 @@ public class CommandMisc extends ShoppingCommand
 		ItemStack itemStack = player.getItemInHand();
 		if (itemStack == null || itemStack.getType() == Material.AIR)
 			throw new IllegalArgumentException("You can't count air!");
-		int count = ShoppingUtils.countInInventory(player, itemStack);
+		int count = ShoppingUtils.countInInventory(player.getInventory(), itemStack);
 
 		String name = ShoppingUtils.toString(itemStack, true);
 

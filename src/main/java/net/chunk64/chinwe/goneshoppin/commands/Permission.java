@@ -1,7 +1,5 @@
 package net.chunk64.chinwe.goneshoppin.commands;
 
-import net.chunk64.chinwe.goneshoppin.util.Utils;
-import org.bukkit.command.CommandSender;
 import org.bukkit.permissions.PermissionDefault;
 
 public enum Permission
@@ -56,13 +54,5 @@ public enum Permission
 	public org.bukkit.permissions.Permission getPermission()
 	{
 		return new org.bukkit.permissions.Permission(PLUGIN_NAME + "." + toString(), defaultPerm ? PermissionDefault.TRUE : PermissionDefault.OP);
-	}
-
-	public boolean senderHas(CommandSender sender)
-	{
-		boolean hasPerm = sender.hasPermission(getPermission());
-		if (!hasPerm)
-			Utils.message(sender, "&cYou can't " + getMessage() + ", you need &6" + getPermission().getName());
-		return hasPerm;
 	}
 }

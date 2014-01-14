@@ -14,9 +14,10 @@ import org.bukkit.entity.Player;
 public class CommandBalance extends ShoppingCommand
 {
 
-	public CommandBalance(Permission perm, boolean playerOnly, String command)
+	public CommandBalance()
 	{
-		super(perm, playerOnly, command);
+		setPermission(Permission.BANK_BALANCE);
+		setPlayerOnly(true);
 	}
 
 	@Override
@@ -36,7 +37,7 @@ public class CommandBalance extends ShoppingCommand
 		boolean self = account.getName().equals(player.getName());
 
 		// permission check
-		if (!self && !Permission.BANK_BALANCE_OTHER.senderHas(sender))
+		if (!self && !hasPermission(sender, Permission.BANK_BALANCE_OTHER))
 			return;
 
 		String limit = account.getLimit() == BankLimit.UNLIMITED ? "It has &bno limit" : "It is &blimited &rto &6" + account.getLimit().toAmount();

@@ -13,9 +13,10 @@ import org.bukkit.command.CommandSender;
 public class CommandReload extends ShoppingCommand
 {
 
-	public CommandReload(Permission perm, boolean playerOnly, String command)
+	public CommandReload()
 	{
-		super(perm, playerOnly, command);
+		setPermission(Permission.RELOAD);
+		setPlayerOnly(false);
 	}
 
 	// /gsreload

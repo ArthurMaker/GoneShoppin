@@ -18,9 +18,12 @@ import java.util.Arrays;
 public class CommandBankAdmin extends ShoppingCommand
 {
 
-	public CommandBankAdmin(Permission perm, boolean playerOnly, String command)
+
+
+	public CommandBankAdmin()
 	{
-		super(perm, playerOnly, command);
+		setPermission(null);
+		setPlayerOnly(false);
 	}
 
 	@Override
@@ -31,6 +34,10 @@ public class CommandBankAdmin extends ShoppingCommand
 		// usage
 		if (args.length != 2)
 			throw new IncorrectUsageException();
+
+		// permission checks
+		if (balance && !hasPermission(sender, Permission.SET_BALANCE) || !balance && !hasPermission(sender, Permission.SET_LIMIT))
+			return;
 
 		// get account
 		Account account = Bank.getInstance().getAccountFuzzily(args[0]);
@@ -46,7 +53,7 @@ public class CommandBankAdmin extends ShoppingCommand
 				throw new IllegalArgumentException("Balances cannot be negative!");
 
 			// over limit?
-			if (!Permission.SET_BALANCE_OVERLIMIT.senderHas(sender) && newBalance > account.getLimit().getAmount().intValue())
+			if (!hasPermission(sender, Permission.SET_BALANCE_OVERLIMIT) && newBalance > account.getLimit().getAmount().intValue())
 				return;
 
 			account.setBalance(newBalance);

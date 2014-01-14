@@ -23,12 +23,12 @@ import java.util.Iterator;
 public class CommandSetPrice extends ShoppingCommand
 {
 
-	public CommandSetPrice(Permission perm, boolean playerOnly, String command)
+	public CommandSetPrice()
 	{
-		super(perm, playerOnly, command);
+		setPermission(Permission.SET_PRICE);
+		setPlayerOnly(false);
 	}
 
-	// /setprice material buy buymin sell sellmin
 
 	@Override
 	public void run(CommandSender sender, Command cmd, String[] args) throws Exception

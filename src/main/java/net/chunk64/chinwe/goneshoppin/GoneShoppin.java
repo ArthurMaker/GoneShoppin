@@ -17,10 +17,12 @@ import net.chunk64.chinwe.goneshoppin.commands.misc.CommandId;
 import net.chunk64.chinwe.goneshoppin.commands.misc.CommandMisc;
 import net.chunk64.chinwe.goneshoppin.commands.shop.CommandBuy;
 import net.chunk64.chinwe.goneshoppin.commands.shop.CommandPrice;
+import net.chunk64.chinwe.goneshoppin.commands.shop.CommandSell;
 import net.chunk64.chinwe.goneshoppin.items.Alias;
 import net.chunk64.chinwe.goneshoppin.items.GSItem;
 import net.chunk64.chinwe.goneshoppin.listeners.ShoppinListener;
 import net.chunk64.chinwe.goneshoppin.logging.GSLogger;
+import net.chunk64.chinwe.goneshoppin.shop.SignManager;
 import net.chunk64.chinwe.goneshoppin.util.Config;
 import net.chunk64.chinwe.goneshoppin.util.FileManager;
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
@@ -32,9 +34,7 @@ public class GoneShoppin extends JavaPlugin
 {
 
 	private static GoneShoppin instance;
-
 	private FileManager data;
-
 
 	@Override
 	public void onEnable()
@@ -76,34 +76,34 @@ public class GoneShoppin extends JavaPlugin
 
 	private void registerCommands()
 	{
-		register("deposit", CommandBanking.class, true, Permission.BANK_DEPOSIT);
-		register("withdraw", CommandBanking.class, true, Permission.BANK_WITHDRAW);
-		register("steal", CommandBanking.class, true, Permission.BANK_STEAL);
-		register("balance", CommandBalance.class, true, Permission.BANK_BALANCE);
-		register("value", CommandMisc.class, true, Permission.VALUE);
-		register("count", CommandMisc.class, true, Permission.COUNT);
-		register("price", CommandPrice.class, true, Permission.PRICE);
-		register("sell", CommandPrice.class, true, Permission.SELL);
-		register("buy", CommandBuy.class, true, Permission.BUY);
-		register("id", CommandId.class, true, Permission.ID);
-		register("setbalance", CommandBankAdmin.class, false, Permission.SET_BALANCE);
-		register("setlimit", CommandBankAdmin.class, false, Permission.SET_LIMIT);
-		register("cash", CommandChange.class, true, Permission.CASH);
-		register("simplify", CommandChange.class, true, Permission.SIMPLIFY);
-		register("setprice", CommandSetPrice.class, false, Permission.SET_PRICE);
-		register("setnote", CommandSetPrice.class, false, Permission.SET_NOTE);
-		register("monitor", CommandMonitor.class, true, Permission.MONITOR);
-		register("gssave", CommandReload.class, false, Permission.SAVE);
-		register("gsreload", CommandReload.class, false, Permission.RELOAD);
+		register("deposit", CommandBanking.class);
+		register("withdraw", CommandBanking.class);
+		register("steal", CommandBanking.class);
+		register("balance", CommandBalance.class);
+		register("value", CommandMisc.class);
+		register("count", CommandMisc.class);
+		register("price", CommandPrice.class);
+		register("sell", CommandSell.class);
+		register("buy", CommandBuy.class);
+		register("id", CommandId.class);
+		register("setbalance", CommandBankAdmin.class);
+		register("setlimit", CommandBankAdmin.class);
+		register("cash", CommandChange.class);
+		register("simplify", CommandChange.class);
+		register("setprice", CommandSetPrice.class);
+		register("setnote", CommandSetPrice.class);
+		register("monitor", CommandMonitor.class);
+		register("gssave", CommandReload.class);
+		register("gsreload", CommandReload.class);
 
 	}
 
-	private void register(String command, Class clazz, boolean playerOnly, Permission perm)
+	private void register(String command, Class clazz)
 	{
 		try
 		{
-			Constructor constructor = clazz.getConstructor(Permission.class, Boolean.TYPE, String.class);
-			ShoppingCommand sc = (ShoppingCommand) constructor.newInstance(perm, playerOnly, command);
+			Constructor constructor = clazz.getConstructor(String.class);
+			ShoppingCommand sc = (ShoppingCommand) constructor.newInstance(command);
 			getCommand(command).setExecutor(sc);
 		} catch (Exception e)
 		{
@@ -114,6 +114,7 @@ public class GoneShoppin extends JavaPlugin
 	private void registerListeners()
 	{
 		getServer().getPluginManager().registerEvents(new ShoppinListener(), this);
+		getServer().getPluginManager().registerEvents(new SignManager(), this);
 	}
 
 
@@ -135,7 +136,6 @@ public class GoneShoppin extends JavaPlugin
 				"material's &3id&7, &3name&7 or &3\"hand\"&7, optionally followed by " +
 				"a &3damage value&7: i.e &81  hand  wood:3  birchwood  17:1  hand:2");
 
-		// TODO add permissions for all
 		bank.addTopics(new CommandTopic("withdraw"), new CommandTopic("deposit"), new CommandTopic("balance"), new CommandTopic("steal", Permission.BANK_STEAL.getPermission()), new CommandTopic("setbalance", Permission.SET_BALANCE.getPermission()), new CommandTopic("setlimit", Permission.SET_LIMIT.getPermission()));
 		shop.addTopics(new CommandTopic("buy"), new CommandTopic("sell"), new CommandTopic("price"), new CommandTopic("value"), material);
 		misc.addTopics(new CommandTopic("count"), new CommandTopic("id"), new CommandTopic("cash"), new CommandTopic("simplify"), material);

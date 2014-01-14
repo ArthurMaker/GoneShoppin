@@ -13,9 +13,10 @@ import org.bukkit.inventory.ItemStack;
 public class CommandId extends ShoppingCommand
 {
 
-	public CommandId(Permission perm, boolean playerOnly, String command)
+	public CommandId()
 	{
-		super(perm, playerOnly, command);
+		setPermission(Permission.ID);
+		setPlayerOnly(true);
 	}
 
 	// id material

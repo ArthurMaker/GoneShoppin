@@ -15,13 +15,15 @@ public abstract class ShoppingCommand implements CommandExecutor
 {
 	protected String command;
 	protected boolean playerOnly;
-	protected Permission perm;
+	protected Permission permission;
 
-	public ShoppingCommand(Permission perm, boolean playerOnly, String command)
+	public ShoppingCommand(String command)
 	{
-		this.playerOnly = playerOnly;
-		this.perm = perm;
 		this.command = command;
+	}
+
+	protected ShoppingCommand()
+	{
 	}
 
 	@Override
@@ -36,7 +38,7 @@ public abstract class ShoppingCommand implements CommandExecutor
 					return true;
 
 				// permission check
-				if (perm != null && !perm.senderHas(sender))
+				if (!hasPermission(sender))
 					return true;
 
 				run(sender, cmd, args);
@@ -75,7 +77,7 @@ public abstract class ShoppingCommand implements CommandExecutor
 		return player;
 	}
 
-	protected void checkMultiples(GSItem gsItem, ItemStack itemStack, boolean buying)
+	public static void checkMultiples(GSItem gsItem, ItemStack itemStack, boolean buying)
 	{
 		int minAmount = gsItem.getPerTransaction(buying);
 		if (itemStack.getAmount() % minAmount != 0)
@@ -88,7 +90,7 @@ public abstract class ShoppingCommand implements CommandExecutor
 		}
 	}
 
-	protected void validatePrice(double finalPrice, String itemName)
+	public static void validatePrice(double finalPrice, String itemName)
 	{
 		if (finalPrice == 0)
 		{
@@ -105,4 +107,49 @@ public abstract class ShoppingCommand implements CommandExecutor
 		return player;
 	}
 
+	public boolean hasPermission(CommandSender sender, Permission permission)
+	{
+		if (permission == null)
+			return true;
+
+		boolean hasPerm = sender.hasPermission(permission.getPermission());
+		if (!hasPerm)
+			Utils.message(sender, "&cYou can't " + permission.getMessage() + ", you need &6" + permission.getPermission().getName());
+		return hasPerm;
+	}
+
+	public boolean hasPermission(CommandSender sender)
+	{
+		return hasPermission(sender, permission);
+	}
+
+	public String getCommand()
+	{
+		return command;
+	}
+
+	public void setCommand(String command)
+	{
+		this.command = command;
+	}
+
+	public boolean isPlayerOnly()
+	{
+		return playerOnly;
+	}
+
+	public void setPlayerOnly(boolean playerOnly)
+	{
+		this.playerOnly = playerOnly;
+	}
+
+	public Permission getPermission()
+	{
+		return permission;
+	}
+
+	public void setPermission(Permission permission)
+	{
+		this.permission = permission;
+	}
 }

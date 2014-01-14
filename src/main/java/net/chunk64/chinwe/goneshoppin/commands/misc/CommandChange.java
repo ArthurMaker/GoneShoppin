@@ -14,9 +14,10 @@ import org.bukkit.inventory.ItemStack;
 public class CommandChange extends ShoppingCommand
 {
 
-	public CommandChange(Permission perm, boolean playerOnly, String command)
+	public CommandChange()
 	{
-		super(perm, playerOnly, command);
+		setPermission(Permission.CASH);
+		setPlayerOnly(true);
 	}
 
 	@Override

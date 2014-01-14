@@ -1,11 +1,12 @@
 package net.chunk64.chinwe.goneshoppin.commands.shop;
 
+import net.chunk64.chinwe.goneshoppin.banking.Bank;
 import net.chunk64.chinwe.goneshoppin.commands.IncorrectUsageException;
 import net.chunk64.chinwe.goneshoppin.commands.Permission;
 import net.chunk64.chinwe.goneshoppin.commands.ShoppingCommand;
 import net.chunk64.chinwe.goneshoppin.logging.Action;
-import net.chunk64.chinwe.goneshoppin.querys.BuyQuery;
 import net.chunk64.chinwe.goneshoppin.querys.QueryResult;
+import net.chunk64.chinwe.goneshoppin.querys.SellQuery;
 import net.chunk64.chinwe.goneshoppin.util.ShoppingUtils;
 import net.chunk64.chinwe.goneshoppin.util.Utils;
 import org.bukkit.command.Command;
@@ -13,14 +14,13 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-public class CommandBuy extends ShoppingCommand
+public class CommandSell extends ShoppingCommand
 {
 
-	public CommandBuy()
+	public CommandSell()
 	{
-		setCommand("buy");
 		setPlayerOnly(true);
-		setPermission(Permission.BUY);
+		setPermission(Permission.SELL);
 	}
 
 	@Override
@@ -29,38 +29,30 @@ public class CommandBuy extends ShoppingCommand
 		Player player = (Player) sender;
 
 		// usage
-		if (args.length != 2 && args.length != 1)
+		if (args.length > 1)
 			throw new IncorrectUsageException();
 
 		// get itemstack
-		ItemStack itemStack = ShoppingUtils.parseInput(player, args[0]);
-		if (itemStack == null)
-			return;
+		ItemStack itemStack = player.getItemInHand().clone(); // to be safe
 
 		// get amount
-		Integer amount;
-		if (args.length == 2)
+		if (args.length == 1)
 		{
-			boolean max = args[1].equalsIgnoreCase("max");
-			if (max)
-				amount = -1;
-			else
-				amount = Utils.getInt(args[1]);
-
+			Integer amount;
+			amount = args[0].equalsIgnoreCase("all") ? Integer.valueOf(ShoppingUtils.countInInventory(player.getInventory(), itemStack)) : Utils.getInt(args[0]);
 			if (amount == null)
-				throw new IllegalArgumentException("Invalid amount given!");
-			if (!max && amount < 1)
-				throw new IllegalArgumentException("You cannot buy an amount less than 1!");
-		} else
-			amount = -2; // set to min amount
-		itemStack.setAmount(amount);
+				throw new IncorrectUsageException();
+			itemStack.setAmount(amount);
+		}
 
-		BuyQuery buyQuery = new BuyQuery(sender, Action.BUY, itemStack, null);
-		QueryResult result = buyQuery.execute();
+		SellQuery sellQuery = new SellQuery(sender, Action.SELL, itemStack, Bank.getInstance().getAccount(player.getName()), player.getInventory());
+		QueryResult result = sellQuery.execute();
 
 		if (result.didError())
 			throw new IllegalArgumentException(result.getMessage());
 		else
 			Utils.message(sender, result.getMessage());
+
 	}
+
 }

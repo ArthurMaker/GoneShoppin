@@ -15,9 +15,10 @@ import java.util.List;
 public class CommandMonitor extends ShoppingCommand
 {
 
-	public CommandMonitor(Permission perm, boolean playerOnly, String command)
+	public CommandMonitor()
 	{
-		super(perm, playerOnly, command);
+		setPermission(Permission.MONITOR);
+		setPlayerOnly(true);
 	}
 
 	@Override
